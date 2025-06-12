@@ -1,0 +1,40 @@
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+a{
+    text-decoration: none;
+    color: #fff;
+}
+.container{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.card-project{
+    width: 100%;
+    max-width: 500px;
+}
+form{
+    font-size: 18px;
+    margin: 20px;
+    border: 1px solid #000;
+    background-color: #23242b;
+
+}
+input, textarea, button{
+    width: 95%;
+    max-width: 98%;
+    margin: 30px 10px;
+    padding: 20px;
+    border: 1px solid #333;
+}
+
+.all-projects{
+    width: 100%;
+    border: 1px solid #333;
+    background-color: #23242b;
+}
