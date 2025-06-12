@@ -13,3 +13,51 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  isAdmin   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  project   Project? // One user can only be assigned one project
+}
+
+model Project {
+  id           String    @id @default(uuid())
+  name         String
+  description  String
+  endDate      DateTime
+  status       Status    @default(PENDING)
+  isCompleted  Boolean   @default(false)
+  assignedUser User?     @relation(fields: [userId], references: [id])
+  userId       String?   @unique // Makes the relationship one-to-one
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  completedAt  DateTime?
+}
+
+enum Status {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+model EmailLog {
+  id         String     @id @default(uuid())
+  recipient  String
+  subject    String
+  content    String
+  sentAt     DateTime   @default(now())
+  status     EmailStatus @default(PENDING)
+  attemptCount Int      @default(0)
+}
+
+enum EmailStatus {
+  PENDING
+  SENT
+  FAILED
+}
