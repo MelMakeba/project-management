@@ -3,5 +3,5 @@ export interface Project {
   id: string;
   name: string;
   description: string;
-  endDate: string;
+  endDate: Date;
 }

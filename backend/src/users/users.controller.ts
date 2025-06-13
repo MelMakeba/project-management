@@ -26,6 +26,11 @@ import { Action } from 'src/permissions/action.enum';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  /**
+   * @Post()
+   * @param data 
+   * @returns 
+   */
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(PermissionGuard)
