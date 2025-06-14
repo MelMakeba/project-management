@@ -1,0 +1,39 @@
+### Create a new user
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "email": "jmulinge@gmail.com",
+  "password": "123456",
+  "role": "USER"
+}
+
+###
+
+### Get all users
+GET http://localhost:3000/users
+
+###
+
+### Get user by ID
+GET http://localhost:3000/users/1
+
+###
+
+### Get user by email
+GET http://localhost:3000/users/email/user@example.com
+
+###
+
+### Update user by ID
+PATCH http://localhost:3000/users/1
+Content-Type: application/json
+
+{
+  "email": "jonathanmulingemwandi@gmail.com"
+}
+
+###
+
+### Delete user by ID
+DELETE http://localhost:3000/users/1

@@ -1,0 +1,20 @@
+### Register a new user
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "email": "adminMel.com",
+  "password": "Mel1233",
+  "role": "ADMIN"
+}
+
+###
+
+### Login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "adminMel.com",
+  "password": "Mel1233"
+}

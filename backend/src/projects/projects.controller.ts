@@ -1,6 +1,5 @@
-/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Project } from './../interfaces/project.interface';
+/* eslint-disable prettier/prettier */
 import {
   Body,
   Controller,
@@ -14,11 +13,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
+import { Project } from './../interfaces/project.interface';
 import { Permission } from 'src/permissions/permission.enum';
-import { PermissionGuard } from 'src/auth/guards/permission.guard';
-import { RequirePermissions } from 'src/auth/decorator/permission.decorator';
 import { Action } from 'src/permissions/action.enum';
+import { RequirePermissions } from 'src/auth/decorator/permission.decorator';
+import { PermissionGuard } from 'src/auth/guards/permission.guard';
 import { ApiResponse } from 'src/interfaces/apiResponse';
+import { JwtAuthGuard } from 'src/auth/guards/jwt/jwtAuth.guard';
+
 import { CreateProjectDto } from 'src/dto/create.project.dto';
 import { UpdateProjectDto } from 'src/dto/update.project.dto';
 
@@ -26,15 +28,10 @@ import { UpdateProjectDto } from 'src/dto/update.project.dto';
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
-  /**
-   * @Post()
-   * @param data 
-   * @returns 
-   */
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UseGuards(PermissionGuard)
-  @RequirePermissions(Action.CREATE)
+  @UseGuards(JwtAuthGuard, PermissionGuard)
+  // @RequirePermissions(Action.CREATE)
   @RequirePermissions(Permission.CREATE_PROJECT)
   async createProject(
     @Body() data: CreateProjectDto,
@@ -47,117 +44,126 @@ export class ProjectsController {
         message: 'Project created successfully',
       };
     } catch (error) {
+      console.error('Create project error:', error);
       return {
         success: false,
         message: 'Error creating project',
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
 
-  /**
-   * @Get()
-   * @param query
-   * @ return project[]
-   */
   @Get()
-  @UseGuards(PermissionGuard)
-  @RequirePermissions(Action.READ)
+  @UseGuards(JwtAuthGuard, PermissionGuard)
+  // @RequirePermissions(Action.READ)
   @RequirePermissions(Permission.VIEW_ALL_PROJECTS)
-  async getAllProjects(): Promise<ApiResponse<Project[]>>{
-    try{
+  async getAllProjects(): Promise<ApiResponse<Project[]>> {
+    try {
       const projects = await this.projectsService.getAllProjects();
       return {
         success: true,
         data: projects,
         message: `Retrieved ${projects.length} projects successfully`,
-      }
-    } catch(error){
+      };
+    } catch (error) {
       return {
         success: false,
         message: 'Error retrieving projects',
-      }
+      };
     }
   }
 
-  /**
-   * @ Get() project by id
-   * @ param id string
-   * @ return project
-   */
   @Get(':id')
-  @UseGuards(PermissionGuard)
-  @RequirePermissions(Action.READ)
+  @UseGuards(JwtAuthGuard, PermissionGuard)
+  // @RequirePermissions(Action.READ)
   @RequirePermissions(Permission.VIEW_ALL_PROJECTS)
-  async getProjectById(@Param('id') id: string): Promise<ApiResponse<Project>>{
-    try{
+  async getProjectById(@Param('id') id: string): Promise<ApiResponse<Project>> {
+    try {
       const project = await this.projectsService.getProjectById(id);
-      return{
+      return {
         success: true,
         data: project,
         message: `Retrieved project with id ${id} successfully`,
-      }
-    } catch(error){
+      };
+    } catch (error) {
       return {
         success: false,
         message: 'Error retrieving project',
-      }
+      };
     }
   }
 
-  /**
-   * @Update () project
-   * @param id string
-   * @ param project
-   */
   @Patch(':id')
-  @UseGuards(PermissionGuard)
-  @RequirePermissions(Action.UPDATE)
+  @UseGuards(JwtAuthGuard, PermissionGuard)
+  // @RequirePermissions(Action.UPDATE)
   @RequirePermissions(Permission.MANAGE_PROJECTS)
-  async updateProject(@Param('id') id: string, @Body() data: UpdateProjectDto): Promise<ApiResponse<Project>>{
-    try{
+  async updateProject(
+    @Param('id') id: string,
+    @Body() data: UpdateProjectDto,
+  ): Promise<ApiResponse<Project>> {
+    try {
       const project = await this.projectsService.updateProject(id, data);
-      if(!project){
+      if (!project) {
         return {
           success: false,
           message: `Project with id ${id} not found`,
-        }
+        };
       }
-      return{
+      return {
         success: true,
         data: project,
         message: `Updated project with id ${id} successfully`,
-      }
-    } catch(error){
+      };
+    } catch (error) {
       return {
         success: false,
         message: 'Error updating project',
         error: error instanceof Error ? error.message : 'Unknown error',
-      }
+      };
     }
-
   }
 
-  // delete project
-  /**
-   * @ Delete () project
-   * @ param id string
-   * @ return null
-   */
   @Delete(':id')
-  @UseGuards(PermissionGuard)
-  @RequirePermissions(Action.DELETE)
+  @UseGuards(JwtAuthGuard, PermissionGuard)
+  // @RequirePermissions(Action.DELETE)
   @RequirePermissions(Permission.MANAGE_PROJECTS)
-  async deleteProject(@Param('id') id: string): Promise<ApiResponse<null>>{
-    try{
+  async deleteProject(@Param('id') id: string): Promise<ApiResponse<null>> {
+    try {
       await this.projectsService.deleteProject(id);
       return {
         success: true,
         message: `Deleted project with id ${id} successfully`,
-      }
-    } catch(error){
+      };
+    } catch (error) {
       return {
         success: false,
         message: 'Error deleting project',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  /**
+   * @PATCH() assign ProjectToUser
+   * @ param @Patch(':projectId/assign/:userId')
+   * @ param @UseGuards(JwtAuthGuard, PermissionGuard)
+   * @ return project 
+   */
+  @Patch(':projectId/assign/:userId')
+  @UseGuards(JwtAuthGuard, PermissionGuard)
+  @RequirePermissions(Permission.ASSIGN_PROJECT)
+  async assignProjectToUser(@Param('projectId') projectId: string, @Param('userId') userId: string): Promise<ApiResponse<Project>>{
+    try {
+      const project = await this.projectsService.assignProjectToUser(projectId, userId);
+      return{
+        success: true,
+        data: project,
+        message: `Project with id ${projectId} assigned to user with id ${userId} successfully`
+      }
+    } catch (error) {
+      return{
+        success: false,
+        message: 'Error assigning project to user',
         error: error instanceof Error ? error.message : 'Unknown error',
       }
     }

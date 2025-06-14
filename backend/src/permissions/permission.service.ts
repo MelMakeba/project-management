@@ -16,8 +16,11 @@ export class PermissionService {
       Permission.VIEW_ALL_USERS,
       Permission.MANAGE_USERS,
       Permission.VIEW_EMAIL_LOGS,
+      Permission.CREATE_PROJECT,
     ],
-    USER: [],
+    USER: [
+      Permission.VIEW_ALL_PROJECTS,
+    ],
   };
 
   getRolePermissions(role: Role): Permission[] {

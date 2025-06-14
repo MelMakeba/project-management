@@ -5,7 +5,7 @@
 import { Permission } from './permission.enum';
 import { Controller, Get, Param, UseGuards, Query } from '@nestjs/common';
 import { PermissionService } from '../permissions/permission.service';
-import { JwtAuthGuard } from '../auth/guards/jwtAuth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt/jwtAuth.guard';
 import { PermissionGuard } from '../auth/guards/permission.guard';
 import { RequirePermissions } from '../auth/decorator/permission.decorator';
 import {

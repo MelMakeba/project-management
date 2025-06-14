@@ -1,7 +1,6 @@
 /* eslint-disable prettier/prettier */
-export class RegisterDto {
-  name: string;
+export interface JwtPayload {
+  sub: string;
   email: string;
-  password: string;
   role: 'ADMIN' | 'USER';
 }

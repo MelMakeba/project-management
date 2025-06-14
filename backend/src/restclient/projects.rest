@@ -1,0 +1,45 @@
+### Create a new project
+POST http://localhost:3000/projects
+Content-Type: application/json
+
+{
+  "name": "Student Portal",
+  "description": "Portal for students to register and view grades",
+  "endDate": "2025-12-31"
+}
+
+###
+
+### Get all projects
+GET http://localhost:3000/projects
+
+###
+
+### Get a project by ID
+GET http://localhost:3000/projects/1
+
+###
+
+### Update a project by ID
+PATCH http://localhost:3000/projects/1
+Content-Type: application/json
+
+{
+  "name": "Student Portal"
+}
+
+###
+
+### Delete a project by ID
+DELETE http://localhost:3000/projects/1
+
+###
+
+### Assign project to a user
+PATCH http://localhost:3000/projects/:projectId/assign/:userId/
+Content-Type: application/json
+
+{
+  "projectId": "857d12bb-8c1c-47b9-a414-017de5437694",
+  "userId": "14d2cd91-2835-4f8d-a7ae-bf6156df209f"
+}
