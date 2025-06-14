@@ -16,17 +16,17 @@ GET http://localhost:3000/users
 ###
 
 ### Get user by ID
-GET http://localhost:3000/users/1
+GET http://localhost:3000/users/7d57e7dd-f95b-44f3-9f55-6d72e4d2e997
 
 ###
 
 ### Get user by email
-GET http://localhost:3000/users/email/user@example.com
+GET http://localhost:3000/users/email/jonathanm@gmail.com
 
 ###
 
 ### Update user by ID
-PATCH http://localhost:3000/users/1
+PATCH http://localhost:3000/users/7d57e7dd-f95b-44f3-9f55-6d72e4d2e997
 Content-Type: application/json
 
 {
@@ -36,4 +36,4 @@ Content-Type: application/json
 ###
 
 ### Delete user by ID
-DELETE http://localhost:3000/users/1
+DELETE http://localhost:3000/users/7d57e7dd-f95b-44f3-9f55-6d72e4d2e997

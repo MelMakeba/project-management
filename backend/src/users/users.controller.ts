@@ -19,7 +19,6 @@ import { PermissionGuard } from 'src/auth/guards/permission.guard';
 import { ApiResponse } from 'src/interfaces/apiResponse';
 import { User } from 'src/interfaces/user.interface';
 import { UpdateUserDto } from 'src/dto/update.user.dto';
-import { Action } from 'src/permissions/action.enum';
 
 @Controller('users')
 export class UsersController {
@@ -33,7 +32,7 @@ export class UsersController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(PermissionGuard)
-  @RequirePermissions(Action.CREATE)
+//   @RequirePermissions(Action.CREATE)
   @RequirePermissions(Permission.MANAGE_USERS)
   async createUser(@Body() data: CreateUserDto): Promise<ApiResponse<User>> {
     try {
@@ -58,7 +57,7 @@ export class UsersController {
    */
   @Get()
   @UseGuards(PermissionGuard)
-  @RequirePermissions(Action.READ)
+//   @RequirePermissions(Action.READ)
   @RequirePermissions(Permission.VIEW_ALL_USERS)
   async getAllUsers(): Promise<ApiResponse<User[]>>{
     try{
@@ -84,7 +83,7 @@ export class UsersController {
    */
   @Get(':id')
   @UseGuards(PermissionGuard)
-  @RequirePermissions(Action.READ)
+//   @RequirePermissions(Action.READ)
   @RequirePermissions(Permission.VIEW_ALL_USERS)
   async getUserById(@Param('id') id: string): Promise<ApiResponse<User>>{
     try{
@@ -110,7 +109,7 @@ export class UsersController {
    */
   @Get('email/:email')
   @UseGuards(PermissionGuard)
-  @RequirePermissions(Action.READ)
+//   @RequirePermissions(Action.READ)
   @RequirePermissions(Permission.VIEW_ALL_USERS)
   async getUserByEmail(@Param('email') email: string): Promise<ApiResponse<User>>{
     try{
@@ -136,7 +135,7 @@ export class UsersController {
    */
   @Patch(':id')
   @UseGuards(PermissionGuard)
-  @RequirePermissions(Action.UPDATE)
+//   @RequirePermissions(Action.UPDATE)
   @RequirePermissions(Permission.MANAGE_USERS)
   async updateUser(@Param('id') id: string, @Body() data: UpdateUserDto): Promise<ApiResponse<User>>{
     try{
@@ -162,7 +161,7 @@ export class UsersController {
    */
   @Delete(':id')
   @UseGuards(PermissionGuard)
-  @RequirePermissions(Action.DELETE)
+//   @RequirePermissions(Action.DELETE)
   @RequirePermissions(Permission.MANAGE_USERS)
   async deleteUser(@Param('id') id: string): Promise<ApiResponse<null>>{
     try{

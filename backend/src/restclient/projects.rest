@@ -16,7 +16,7 @@ GET http://localhost:3000/projects
 ###
 
 ### Get a project by ID
-GET http://localhost:3000/projects/1
+GET http://localhost:3000/projects/"857d12bb-8c1c-47b9-a414-017de5437694"
 
 ###
 

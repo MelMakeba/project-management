@@ -15,7 +15,6 @@ import {
 import { ProjectsService } from './projects.service';
 import { Project } from './../interfaces/project.interface';
 import { Permission } from 'src/permissions/permission.enum';
-import { Action } from 'src/permissions/action.enum';
 import { RequirePermissions } from 'src/auth/decorator/permission.decorator';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
 import { ApiResponse } from 'src/interfaces/apiResponse';
