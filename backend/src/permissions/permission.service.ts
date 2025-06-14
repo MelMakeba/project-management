@@ -17,9 +17,11 @@ export class PermissionService {
       Permission.MANAGE_USERS,
       Permission.VIEW_EMAIL_LOGS,
       Permission.CREATE_PROJECT,
-    ],
+      Permission.CREATE_USER,
+    ],    
     USER: [
-      Permission.VIEW_ALL_PROJECTS,
+      Permission.VIEW_OWN_PROJECTS,
+      Permission.UPDATE_PROJECT_STATUS
     ],
   };
 

@@ -1,12 +1,15 @@
 ### Create a new user
 POST http://localhost:3000/users
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ODBiYzg4YS04ZWEwLTRiZGYtOTVhZS0yZTY0MGQ5MWU0NjgiLCJlbWFpbCI6ImpvbmF0aGFubXVsaW5nZW13YW5kaUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDk5MzE0NzMsImV4cCI6MTc1MDAxNzg3M30.OrNf1-leiLC77gwm4V5brHZJW0tXkAvzWLvaWigTfd4
 
 {
-  "email": "jmulinge@gmail.com",
-  "password": "123456",
+  "name": "Brian Mwangi",
+  "email": "brian@gmail.com",
+  "password": "shal00j1010",
   "role": "USER"
 }
+
 
 ###
 

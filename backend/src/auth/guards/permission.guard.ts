@@ -32,6 +32,7 @@ export class PermissionGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const user = request.user;
+    console.log('User:', user);
     if(!user || !user.role){
       throw new ForbiddenException('You do not have permission to access this resource');
     };

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
 import {
@@ -22,6 +23,8 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt/jwtAuth.guard';
 
 import { CreateProjectDto } from 'src/dto/create.project.dto';
 import { UpdateProjectDto } from 'src/dto/update.project.dto';
+import { Status } from 'generated/prisma';
+import { data } from 'react-router-dom';
 
 @Controller('projects')
 export class ProjectsController {
@@ -72,6 +75,7 @@ export class ProjectsController {
     }
   }
 
+  // get ProjectById
   @Get(':id')
   @UseGuards(JwtAuthGuard, PermissionGuard)
   // @RequirePermissions(Action.READ)
@@ -92,6 +96,7 @@ export class ProjectsController {
     }
   }
 
+  // edit or update project (User Role)
   @Patch(':id')
   @UseGuards(JwtAuthGuard, PermissionGuard)
   // @RequirePermissions(Action.UPDATE)
@@ -122,6 +127,33 @@ export class ProjectsController {
     }
   }
 
+
+      /**
+     * @Get() view own projects
+     * @ params userId
+     * @ return projects
+     */
+      @Get('user/:userId')
+      @UseGuards(JwtAuthGuard, PermissionGuard)
+      @RequirePermissions(Permission.VIEW_OWN_PROJECTS)
+      async viewOwnProjects(@Param('userId') userId: string): Promise<ApiResponse<Project>>{
+        try{
+          const projects = await this.projectsService.viewOwnProject(userId);
+          return{
+            success: true,
+            data: projects,
+            message: `Projects of user with id (${userId}) viewed successfully`
+          }
+        } catch (error) {
+          console.error('Error',error)
+          return{
+            success: false,
+            message: 'Error viewing own projects',
+            error: error instanceof Error ? error.message : 'Unknown error',
+          }
+        }
+      }
+  
   @Delete(':id')
   @UseGuards(JwtAuthGuard, PermissionGuard)
   // @RequirePermissions(Action.DELETE)
@@ -167,4 +199,32 @@ export class ProjectsController {
       }
     }
   }
-}
+
+  /**
+   * @ PATCH() update Project status 
+   * @ param userId and projectId
+   * @ return project
+   */
+  @Patch(':projectId/status')
+  @UseGuards(JwtAuthGuard, PermissionGuard)
+  @RequirePermissions(Permission.UPDATE_PROJECT_STATUS)
+  async updateProjectStatus(@Param('projectId') projectId: string, @Body() status: Status): Promise<ApiResponse<Project>>{
+    try {
+      const project = await this.projectsService.updateProjectStatus(projectId, status);
+      return{
+        success: true,
+        data: project,
+        message: `Project with id ${projectId} status updated successfully`
+      }
+      } catch (error) {
+        return{
+          success: false,
+          message: 'Error updating project status',
+          error: error instanceof Error ? error.message : 'Unknown error',
+        }
+      }
+    }
+
+
+  }
+

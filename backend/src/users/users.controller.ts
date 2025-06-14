@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import {
-    Body,
+  Body,
   Controller,
   Delete,
   Get,
@@ -19,6 +19,7 @@ import { PermissionGuard } from 'src/auth/guards/permission.guard';
 import { ApiResponse } from 'src/interfaces/apiResponse';
 import { User } from 'src/interfaces/user.interface';
 import { UpdateUserDto } from 'src/dto/update.user.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UsersController {
@@ -31,9 +32,8 @@ export class UsersController {
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UseGuards(PermissionGuard)
-//   @RequirePermissions(Action.CREATE)
-  @RequirePermissions(Permission.MANAGE_USERS)
+  @UseGuards(AuthGuard('jwt'), PermissionGuard)
+  @RequirePermissions(Permission.CREATE_USER)
   async createUser(@Body() data: CreateUserDto): Promise<ApiResponse<User>> {
     try {
       const user = await this.usersService.createUser(data);
@@ -41,141 +41,127 @@ export class UsersController {
         success: true, 
         message: 'User created successfully',
         data: user 
-    };
+      };
     } catch (error) {
       return { 
         success: false, 
-        message: 'User created successfully',
+        message: 'Error creating user',
         error: error instanceof Error ? error.message : 'Unknown error',
-     };
+      };
     }
   }
 
   /**
-   * @ Get all users
-   * @ return User[]
+   * Get all users
    */
   @Get()
-  @UseGuards(PermissionGuard)
-//   @RequirePermissions(Action.READ)
+  @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @RequirePermissions(Permission.VIEW_ALL_USERS)
-  async getAllUsers(): Promise<ApiResponse<User[]>>{
-    try{
-        const users = await this.usersService.findAll();
-        return {
-            success: true,
-            message: 'Users retrieved successfully',
-            data: users
-        }
-    } catch(error){
-        return {
-            success: false,
-            message: 'Error retrieving users',
-            error: error instanceof Error ? error.message : 'Unknown error',
-        }
+  async getAllUsers(): Promise<ApiResponse<User[]>> {
+    try {
+      const users = await this.usersService.findAll();
+      return {
+        success: true,
+        message: 'Users retrieved successfully',
+        data: users,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error retrieving users',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
     }
   }
 
   /**
-   *  @ Get user by id
-   *  @param id: string
-   *  @ return User
+   * Get user by ID
    */
   @Get(':id')
-  @UseGuards(PermissionGuard)
-//   @RequirePermissions(Action.READ)
+  @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @RequirePermissions(Permission.VIEW_ALL_USERS)
-  async getUserById(@Param('id') id: string): Promise<ApiResponse<User>>{
-    try{
-        const user = await this.usersService.findById(id);
-        return {
-            success: true,
-            message: 'User retrieved successfully',
-            data: user
-        }
-    } catch(error){
-        return {
-            success: false,
-            message: 'Error retrieving user',
-            error: error instanceof Error ? error.message : 'Unknown error',
-        }
+  async getUserById(@Param('id') id: string): Promise<ApiResponse<User>> {
+    try {
+      const user = await this.usersService.findById(id);
+      return {
+        success: true,
+        message: 'User retrieved successfully',
+        data: user,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error retrieving user',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
     }
   }
 
   /**
-   *  @Get user by email
-   *  @param email: string
-   *  @ return User
+   * Get user by email
    */
   @Get('email/:email')
-  @UseGuards(PermissionGuard)
-//   @RequirePermissions(Action.READ)
+  @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @RequirePermissions(Permission.VIEW_ALL_USERS)
-  async getUserByEmail(@Param('email') email: string): Promise<ApiResponse<User>>{
-    try{
-        const user = await this.usersService.findByEmail(email);
-        return {
-            success: true,
-            message: 'User retrieved successfully',
-            data: user
-        }
-    } catch(error){
-        return {
-            success: false,
-            message: 'Error retrieving user',
-            error: error instanceof Error ? error.message : 'Unknown error',
-        }
+  async getUserByEmail(@Param('email') email: string): Promise<ApiResponse<User>> {
+    try {
+      const user = await this.usersService.findByEmail(email);
+      return {
+        success: true,
+        message: 'User retrieved successfully',
+        data: user,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error retrieving user',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
     }
   }
 
   /**
-   *  @Update user
-   *  @param user: User
-   *  @ return User
+   * Update user
    */
   @Patch(':id')
-  @UseGuards(PermissionGuard)
-//   @RequirePermissions(Action.UPDATE)
+  @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @RequirePermissions(Permission.MANAGE_USERS)
-  async updateUser(@Param('id') id: string, @Body() data: UpdateUserDto): Promise<ApiResponse<User>>{
-    try{
-        const user = await this.usersService.update(id, data);
-        return {
-            success: true,
-            message: 'User updated successfully',
-            data: user
-        }
-    } catch(error){
-        return {
-            success: false,
-            message: 'Error updating user',
-            error: error instanceof Error ? error.message : 'Unknown error',
-        }
+  async updateUser(@Param('id') id: string, @Body() data: UpdateUserDto): Promise<ApiResponse<User>> {
+    try {
+      const user = await this.usersService.update(id, data);
+      return {
+        success: true,
+        message: 'User updated successfully',
+        data: user,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error updating user',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
     }
   }
 
   /**
-   *  @Delete user
-   *  @param id: string
-   *  @ return User
+   * Delete user
    */
   @Delete(':id')
-  @UseGuards(PermissionGuard)
-//   @RequirePermissions(Action.DELETE)
+  @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @RequirePermissions(Permission.MANAGE_USERS)
-  async deleteUser(@Param('id') id: string): Promise<ApiResponse<null>>{
-    try{
-        await this.usersService.delete(id);
-        return {
-            success: true,
-            message: 'User deleted successfully',
-        }
-    } catch(error){
-        return {
-            success: false,
-            message: 'Error deleting user',
-            error: error instanceof Error ? error.message : 'Unknown error',
-        }
+  async deleteUser(@Param('id') id: string): Promise<ApiResponse<null>> {
+    try {
+      await this.usersService.delete(id);
+      return {
+        success: true,
+        message: 'User deleted successfully',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error deleting user',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
     }
   }
 }

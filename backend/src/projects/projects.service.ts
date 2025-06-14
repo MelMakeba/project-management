@@ -1,4 +1,6 @@
-
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable no-useless-catch */
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable prettier/prettier */
@@ -88,13 +90,16 @@ export class ProjectsService {
       }
       return await this.prisma.project.update({
         where: { id },
-        data: { status },
+        data:{
+          status: 'IN_PROGRESS'
+        }
       });
     } catch (error) {
+      console.error("Error occured while updating project",error)
       if (error instanceof ConflictException) {
         throw error;
       }
-      throw new InternalServerErrorException('Error updating project status');
+      throw new InternalServerErrorException('Error updating project status', error.message);
     }
   }
 
@@ -157,8 +162,27 @@ export class ProjectsService {
         throw error;
       }
       // rethrow or handle unexpected errors
-      throw new Error('Unexpected error occurred during project assignment');
+      throw new InternalServerErrorException('Unexpected error occurred during project assignment');
     }
   }
+
+  // user to view their assigned project
+  async viewOwnProject(userId: string): Promise<Project> {
+    try {
+      const user = await this.prisma.user.findUnique({ where: { id: userId }});
+      if (!user) {
+        throw new NotFoundException(`User with id ${userId} not found`);
+      }
   
+      const userHasProject = await this.prisma.project.findFirst({
+        where: { userId }
+      });
+      if (!userHasProject) {
+        throw new NotFoundException('User does not have a project assigned');
+      }
+      return userHasProject;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
