@@ -19,7 +19,7 @@ async login(@Body() data: LoginDto): Promise<ApiResponse<{ token: string }>> {
     const result = await this.authService.login(data);
     return {
       success: true,
-      message: 'User logged in successfully',
+      message: 'You have logged in successfully',
       data: result,
     };
   } catch (error) {
@@ -38,7 +38,7 @@ async register(@Body() data: RegisterDto): Promise<ApiResponse<any>> {
     const user = await this.authService.register(data);
     return {
       success: true,
-      message: 'User registered successfully',
+      message: 'User has been registered successfully',
       data: user,
     };
   } catch (error) {
