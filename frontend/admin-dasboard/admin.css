@@ -44,11 +44,13 @@
 .side-bar {
 	width: 250px;
 	background: #262931;
-	min-height: 100vh;
+	min-height: 100%;
 	transition: 500ms width;
+
 }
 .body {
 	display: flex;
+	background-color: #2a3547;
 }
 
 .side-bar ul {
@@ -112,6 +114,8 @@ ion-icon{
 	background-color: #23242b;
 	width: 300px;
 	height: 300px;
+	border-radius: 3px;
+	box-shadow: 10px 10px 5px #000;
 }
 
 
@@ -140,4 +144,134 @@ ion-icon{
 	background-color: #127b8e;
 	border: 1px solid #333;
 	color: #fff;
+}
+
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 20px;
+    gap: 20px;
+    justify-content: center;
+    width: 100%;
+	background-color: #2a3547;
+}
+
+.card-project, .all-projects, .assign-projects, .assigned-projects {
+    background-color: #23242b;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: #fff;
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 20px;
+}
+
+.card-project h3, .all-projects h3, .assign-projects h3, .assigned-projects h4 {
+    color: #127b8e;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+label {
+    color: #ccc;
+    font-size: 1rem;
+}
+
+input, textarea, select {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #444;
+    background-color: #333;
+    color: #fff;
+    font-size: 1rem;
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+button[type="submit"] {
+    background-color: #127b8e;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+button[type="submit"]:hover {
+    background-color: #0e6474;
+}
+
+.all-projects ul, .assigned-projects ul {
+    list-style-type: none;
+}
+
+.all-projects li, .assigned-projects li {
+    padding: 10px;
+    border-bottom: 1px solid #444;
+    color: #ccc;
+    transition: color 0.3s;
+}
+
+.all-projects li:last-child, .assigned-projects li:last-child {
+    border-bottom: none;
+}
+
+.all-projects li:hover, .assigned-projects li:hover {
+    color: #127b8e;
+}
+
+@media (max-width: 768px) {
+    .stats {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .card {
+        width: 90%;
+        margin: 10px 0;
+    }
+    
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .card-project, .all-projects, .assign-projects, .assigned-projects {
+        width: 90%;
+    }
+}
+
+/* Left section icons */
+.left {
+    display: flex;
+    gap: 20px;
+}
+
+.left ion-icon {
+    font-size: 24px;
+    transition: color 0.3s;
+}
+
+.left ion-icon:hover {
+    color: #127b8e;
+}
+
+/* Header title adjustments */
+.header h2 {
+    font-size: 1.5rem;
+    margin-left: 20px;
 }
