@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { PrismaClient } from 'generated/prisma';
 
 let prisma: PrismaClient;

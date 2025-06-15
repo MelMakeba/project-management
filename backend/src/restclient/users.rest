@@ -1,0 +1,42 @@
+### Create a new user
+POST http://localhost:3000/users
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ODBiYzg4YS04ZWEwLTRiZGYtOTVhZS0yZTY0MGQ5MWU0NjgiLCJlbWFpbCI6ImpvbmF0aGFubXVsaW5nZW13YW5kaUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDk5MzE0NzMsImV4cCI6MTc1MDAxNzg3M30.OrNf1-leiLC77gwm4V5brHZJW0tXkAvzWLvaWigTfd4
+
+{
+  "name": "Brian Mwangi",
+  "email": "brian@gmail.com",
+  "password": "shal00j1010",
+  "role": "USER"
+}
+
+
+###
+
+### Get all users
+GET http://localhost:3000/users
+
+###
+
+### Get user by ID
+GET http://localhost:3000/users/7d57e7dd-f95b-44f3-9f55-6d72e4d2e997
+
+###
+
+### Get user by email
+GET http://localhost:3000/users/email/jonathanm@gmail.com
+
+###
+
+### Update user by ID
+PATCH http://localhost:3000/users/7d57e7dd-f95b-44f3-9f55-6d72e4d2e997
+Content-Type: application/json
+
+{
+  "email": "jonathanmulingemwandi@gmail.com"
+}
+
+###
+
+### Delete user by ID
+DELETE http://localhost:3000/users/7d57e7dd-f95b-44f3-9f55-6d72e4d2e997

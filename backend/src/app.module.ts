@@ -1,18 +1,33 @@
+/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserService } from './user/user.service';
-import { UserController } from './user/user.controller';
-import { ProjectsService } from './projects/projects.service';
-import { ProjectsController } from './projects/projects.controller';
-import { AuthService } from './auth/auth.service';
-import { AuthController } from './auth/auth.controller';
 import { UsersService } from './users/users.service';
 import { UsersController } from './users/users.controller';
+import { ProjectsService } from './projects/projects.service';
+import { ProjectsController } from './projects/projects.controller';
+import { PermissionModule } from './permissions/permission.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController, UserController, ProjectsController, AuthController, UsersController],
-  providers: [AppService, UserService, ProjectsService, AuthService, UsersService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    PermissionModule,
+    AuthModule,
+  ],
+  controllers: [
+    AppController,
+    UsersController,
+    ProjectsController,
+  ],
+  providers: [
+    AppService,
+    UsersService,
+    ProjectsService,
+  ],
 })
 export class AppModule {}
