@@ -47,13 +47,17 @@ enum Status {
 }
 
 model EmailLog {
-  id         String     @id @default(uuid())
-  recipient  String
-  subject    String
-  content    String
-  sentAt     DateTime   @default(now())
-  status     EmailStatus @default(PENDING)
-  attemptCount Int      @default(0)
+  id           String    @id @default(uuid())
+  recipient    String
+  subject      String
+  templateName String?
+  templateData Json?
+  content      String    @db.Text
+  status       String   
+  error        String?   @db.Text  
+  sentAt       DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
 enum EmailStatus {

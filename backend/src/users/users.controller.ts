@@ -18,7 +18,7 @@ import { UsersService } from './users.service';
 import { RequirePermissions } from 'src/auth/decorator/permission.decorator';
 import { CreateUserDto } from 'src/dto/create.user.dto';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
-import { ApiResponse } from 'src/interfaces/apiResponse';
+import { ApiResponse } from 'src/shared/interfaces/api-response.interfaces';
 import { User } from 'src/interfaces/user.interface';
 import { UpdateUserDto } from 'src/dto/update.user.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -35,7 +35,6 @@ export class UsersController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(AuthGuard('jwt'), PermissionGuard)
-  @RequirePermissions(Permission.CREATE_USER)
   async createUser(@Body() data: CreateUserDto): Promise<ApiResponse<User>> {
     try {
       const user = await this.usersService.createUser(data);

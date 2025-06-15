@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import * as bcrypt from 'bcryptjs';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaClient } from 'generated/prisma';
 import { JwtService } from './guards/jwt/jwt.service';
 import { LoginDto } from 'src/dto/login.dto';
@@ -21,70 +23,89 @@ export class AuthService {
   }
 
   // login
-  async login(data: LoginDto): Promise<ApiResponse> {
-    try {
-      const user = await this.prisma.user.findUnique({
-        where: { email: data.email },
-      });
-      
-      if (!user) {
-        return this.apiResponse.error('User not found');
-      }
-
-      const isValidPassword = await bcrypt.compare(data.password, user.password);
-      if (!isValidPassword) {
-        return this.apiResponse.error('Invalid password');
-      }
-
-      const token = this.jwtService.generateToken({
-        sub: user.id,
-        email: user.email,
-        role: user.role,
-      });
-
-      return this.apiResponse.success({
-        token,
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role
-        }
-      }, 'Login successful');
-    } catch (error) {
-      return this.apiResponse.error(`Login failed: ${error.message}`);
+  async login(loginDto: LoginDto): Promise<{ token: string; user: any }> {
+    const { email, password } = loginDto;
+    
+    // Find user
+    const user = await this.prisma.user.findUnique({
+      where: { email }
+    });
+    
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
     }
+    
+    // Verify password
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    
+    // Generate actual JWT token
+    const payload = { 
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      permissions: []  // Use empty array since permissions don't exist on the user object
+    };
+    
+    const token = this.jwtService.sign(payload);
+    
+    // Remove password from user object
+    const { password: _, ...userWithoutPassword } = user;
+    
+    // Return both token and user object
+    return {
+      token,
+      user: userWithoutPassword
+    };
   }
 
   // register
-  async register(data: RegisterDto): Promise<ApiResponse> {
+  async register(registerDto: RegisterDto): Promise<{ token: string; user: any }> {
     try {
-      const existing = await this.prisma.user.findUnique({
-        where: { email: data.email },
-      });
+      const { email, password, name, role } = registerDto;
       
-      if (existing) {
-        return this.apiResponse.error('User already exists');
+      // Check if user exists
+      const existingUser = await this.prisma.user.findUnique({ where: { email } });
+      if (existingUser) {
+        throw new Error('User already exists');
       }
-
-      const hashedPassword = await bcrypt.hash(data.password, 10);
-      const user = await this.prisma.user.create({
+      
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
+      
+      // Create user
+      const newUser = await this.prisma.user.create({
         data: {
-          email: data.email,
+          email,
           password: hashedPassword,
-          name: data.name,
-          role: data.role
+          name,
+          role: role || 'USER',
         },
       });
-
-      return this.apiResponse.success({
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role
-      }, 'Registration successful');
+      
+      // Generate token
+      const payload = {
+        sub: newUser.id,
+        email: newUser.email,
+        role: newUser.role,
+        permissions: []  // Use empty array since permissions don't exist on the user object
+      };
+      
+      const token = this.jwtService.sign(payload);
+      
+      // Remove password from response
+      const { password: _, ...userWithoutPassword } = newUser;
+      
+      // Return both token and user
+      return {
+        token,
+        user: userWithoutPassword,
+      };
     } catch (error) {
-      return this.apiResponse.error(`Registration failed: ${error.message}`);
+      throw new Error(error.message);
     }
   }
 }

@@ -7,7 +7,7 @@ export enum Permission {
   VIEW_EMAIL_LOGS = 'VIEW_EMAIL_LOGS',
   CREATE_PROJECT = 'CREATE_PROJECT',
   VIEW_ALL_USERS = "VIEW_ALL_USERS",
-  VIEW_OWN_PROJECTS = "VIEW_OWN_PROJECTS",
-  UPDATE_PROJECT_STATUS = "UPDATE_PROJECT_STATUS",
-  CREATE_USER = 'CREATE_USER'
+  VIEW_OWN_PROJECTS = 'view_own_projects',
+  UPDATE_PROJECT_STATUS = 'update_project_status',
+  UPDATE_OWN_PROJECT = 'update_own_project',  // Add this if you want a specific permission
 }

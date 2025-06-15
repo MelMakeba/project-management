@@ -1,52 +1,78 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from 'src/dto/login.dto';
 import { RegisterDto } from 'src/dto/register.dto';
+import { Response } from 'express';
 
-import { ApiResponse } from '../interfaces/apiResponse';
+
+
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
-@Post('login')
-@HttpCode(HttpStatus.OK)
-async login(@Body() data: LoginDto): Promise<ApiResponse<{ token: string }>> {
-  try {
-    const result = await this.authService.login(data);
-    return {
-      success: true,
-      message: 'You have logged in successfully',
-      data: result,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      message: error.message || 'Login failed',
-      data: null,
-    };
+  @Post('login')
+  async login(@Body() data: LoginDto, @Res() response: Response): Promise<void> {
+    try {
+      const result = await this.authService.login(data);
+      
+      let token = '';
+      if (typeof result === 'object' && result !== null) {
+        token = result.token || '';
+      } else if (typeof result === 'string') {
+        token = result;
+      }
+      
+      response.status(HttpStatus.OK).json({
+        token: token,
+        success: true,
+        message: 'You have logged in successfully',
+        data: { 
+          token: token,
+          user: result.user || null
+        },
+      });
+    } catch (error) {
+      console.error('Login error:', error);
+      
+      // Return error response with 401 Unauthorized
+      response.status(HttpStatus.UNAUTHORIZED).json({
+        token: '',
+        success: false,
+        message: error.message || 'Invalid credentials',
+        data: { token: '' },
+      });
+    }
+  }
+
+  @Post('register')
+  async register(@Body() data: RegisterDto, @Res() response: Response): Promise<void> {
+    try {
+      const result = await this.authService.register(data);
+      
+      response.status(HttpStatus.CREATED).json({
+        token: result.token,
+        success: true,
+        message: 'User has been registered successfully',
+        data: result.user,
+      });
+    } catch (error) {
+      let statusCode = HttpStatus.BAD_REQUEST;
+      
+      if (error.message.includes('already exists')) {
+        statusCode = HttpStatus.CONFLICT;
+      }
+      
+      response.status(statusCode).json({
+        token: '',
+        success: false,
+        message: error.message || 'Registration failed',
+        data: null,
+      });
+    }
   }
 }
 
-@Post('register')
-@HttpCode(HttpStatus.CREATED)
-async register(@Body() data: RegisterDto): Promise<ApiResponse<any>> {
-  try {
-    const user = await this.authService.register(data);
-    return {
-      success: true,
-      message: 'User has been registered successfully',
-      data: user,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      message: error.message || 'Registration failed',
-      data: null,
-    };
-  }
-}
-}

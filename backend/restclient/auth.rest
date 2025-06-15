@@ -1,0 +1,43 @@
+### Register admin user
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "email": "melissamakeba@gmail.com",
+  "password": "Mel143",
+  "name": "Admin user",
+  "role": "ADMIN"
+}
+
+###Register a user
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "email": "melissa.waitituh@strathmore.edu",
+  "password": "Mel0023",
+  "name": "Mellisa Waits",
+  "role": "USER"
+}
+
+###
+
+### Login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "melissamakeba@gmail.com",
+  "password": "Mel143"
+}
+
+###
+
+### Login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "melissa.waitituh@strathmore.edu",
+  "password": "Mel0023"
+}

@@ -18,5 +18,5 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "./tsconfig-paths.js", "./webpack-hmr.config.js"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "./tsconfig-paths.js"]
 }

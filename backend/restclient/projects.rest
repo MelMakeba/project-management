@@ -1,0 +1,88 @@
+### Create a new project
+POST http://localhost:3000/projects
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDgyMGFkOS03OGIyLTRkNjItOTlmOC0xY2E5ZTBiZDc0YmIiLCJlbWFpbCI6ImFkbWluTWVsQGV4YW1wbGUuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUwMDIzNDQwLCJleHAiOjE3NTAxMDk4NDB9.o5ig3Q-q41yff8i3OETHitY9xOJOpIEWOeV9MvzPV24
+
+{
+  "name": "Student Grade Tracker System",
+  "description": "Grade Tracker system for students to track their grades.",
+  "endDate": "2025-12-31"
+}
+
+###
+
+### Get all projects
+GET http://localhost:3000/projects
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MTE2ZDJiMi00NDY0LTQ5ZTQtYWMyNS00MmIzY2UyMDUwZjAiLCJlbWFpbCI6Im1lbGlzc2FtYWtlYmFAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUwMDI1Nzk4LCJleHAiOjE3NTAxMTIxOTh9.iHTphrBrleH2xge4WrzJYSiXjJRW5PuAsNJHxUda-4Q
+###
+
+### Get a project by ID
+GET http://localhost:3000/projects/aed62e64-45d0-4ad3-bfa1-622396d927ed
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDgyMGFkOS03OGIyLTRkNjItOTlmOC0xY2E5ZTBiZDc0YmIiLCJlbWFpbCI6ImFkbWluTWVsQGV4YW1wbGUuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUwMDIzNDQwLCJleHAiOjE3NTAxMDk4NDB9.o5ig3Q-q41yff8i3OETHitY9xOJOpIEWOeV9MvzPV24
+
+###
+
+### Update a project by ID
+PATCH http://localhost:3000/projects/aed62e64-45d0-4ad3-bfa1-622396d927ed
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDgyMGFkOS03OGIyLTRkNjItOTlmOC0xY2E5ZTBiZDc0YmIiLCJlbWFpbCI6ImFkbWluTWVsQGV4YW1wbGUuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUwMDIzNDQwLCJleHAiOjE3NTAxMDk4NDB9.o5ig3Q-q41yff8i3OETHitY9xOJOpIEWOeV9MvzPV24
+
+{
+  "name": "Student Portal"
+}
+
+###
+
+### Delete a project by ID
+DELETE http://localhost:3000/projects/aed62e64-45d0-4ad3-bfa1-622396d927ed
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDgyMGFkOS03OGIyLTRkNjItOTlmOC0xY2E5ZTBiZDc0YmIiLCJlbWFpbCI6ImFkbWluTWVsQGV4YW1wbGUuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUwMDIzNDQwLCJleHAiOjE3NTAxMDk4NDB9.o5ig3Q-q41yff8i3OETHitY9xOJOpIEWOeV9MvzPV24
+
+###
+
+### Assign project to a user
+PATCH http://localhost:3000/projects/4c4fc353-a3c3-42db-b3e0-06f90ff1f1a8/assign/1851e95e-a11e-46f3-a76a-c244c4e1c12b
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MTE2ZDJiMi00NDY0LTQ5ZTQtYWMyNS00MmIzY2UyMDUwZjAiLCJlbWFpbCI6Im1lbGlzc2FtYWtlYmFAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUwMDI1Nzk4LCJleHAiOjE3NTAxMTIxOTh9.iHTphrBrleH2xge4WrzJYSiXjJRW5PuAsNJHxUda-4Q
+
+###
+### Update project status //by Admin
+PATCH http://localhost:3000/projects/7247a10a-e4c8-416c-b43e-26520920274b/status
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MTE2ZDJiMi00NDY0LTQ5ZTQtYWMyNS00MmIzY2UyMDUwZjAiLCJlbWFpbCI6Im1lbGlzc2FtYWtlYmFAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUwMDI1Nzk4LCJleHAiOjE3NTAxMTIxOTh9.iHTphrBrleH2xge4WrzJYSiXjJRW5PuAsNJHxUda-4Q
+
+{
+  "status": "COMPLETED" 
+}
+
+###
+### User marking their project as completed
+PATCH http://localhost:3000/projects/user/4c4fc353-a3c3-42db-b3e0-06f90ff1f1a8/complete
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxODUxZTk1ZS1hMTFlLTQ2ZjMtYTc2YS1jMjQ0YzRlMWMxMmIiLCJlbWFpbCI6Im1lbGlzc2Eud2FpdGl0dWhAc3RyYXRobW9yZS5lZHUiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1MDAyODMxNiwiZXhwIjoxNzUwMTE0NzE2fQ.hnslnWAq9evPAIekInacsXYHtoZeHnY7lit-6FVRXu4
+
+###
+### view own assigned projects
+GET http://localhost:3000/projects/user/4c4fc353-a3c3-42db-b3e0-06f90ff1f1a8
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxODUxZTk1ZS1hMTFlLTQ2ZjMtYTc2YS1jMjQ0YzRlMWMxMmIiLCJlbWFpbCI6Im1lbGlzc2Eud2FpdGl0dWhAc3RyYXRobW9yZS5lZHUiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1MDAyODMxNiwiZXhwIjoxNzUwMTE0NzE2fQ.hnslnWAq9evPAIekInacsXYHtoZeHnY7lit-6FVRXu4
+
+###
+### get completed projects
+GET http://localhost:3000/projects/status/completed
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ODBiYzg4YS04ZWEwLTRiZGYtOTVhZS0yZTY0MGQ5MWU0NjgiLCJlbWFpbCI6ImpvbmF0aGFubXVsaW5nZW13YW5kaUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDk5NjkxMjksImV4cCI6MTc1MDA1NTUyOX0.kR7gJyrsV4fxJs_mwDQI6XpNQ69RGLyYhEb16cLnymc
+
+###
+### get pending projects
+GET http://localhost:3000/projects/status/pending
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ODBiYzg4YS04ZWEwLTRiZGYtOTVhZS0yZTY0MGQ5MWU0NjgiLCJlbWFpbCI6ImpvbmF0aGFubXVsaW5nZW13YW5kaUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDk5NjkxMjksImV4cCI6MTc1MDA1NTUyOX0.kR7gJyrsV4fxJs_mwDQI6XpNQ69RGLyYhEb16cLnymc
+
+###
+### get in_progress projects
+GET http://localhost:3000/projects/status/in_progress
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ODBiYzg4YS04ZWEwLTRiZGYtOTVhZS0yZTY0MGQ5MWU0NjgiLCJlbWFpbCI6ImpvbmF0aGFubXVsaW5nZW13YW5kaUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDk5NjkxMjksImV4cCI6MTc1MDA1NTUyOX0.kR7gJyrsV4fxJs_mwDQI6XpNQ69RGLyYhEb16cLnymc

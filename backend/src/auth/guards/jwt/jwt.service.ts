@@ -1,12 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable prettier/prettier */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
-import { Role } from 'generated/prisma';
+import { $Enums, Role } from 'generated/prisma';
 
 export interface JwtPayload {
   sub: string;
@@ -18,6 +15,14 @@ export interface JwtPayload {
 
 @Injectable()
 export class JwtService {
+  sign(payload: { sub: string; email: string; role: $Enums.Role; permissions: any; }): string {
+    const jwtPayload: JwtPayload = {
+      sub: payload.sub,
+      email: payload.email,
+      role: payload.role
+    };
+    return this.generateToken(jwtPayload);
+  }
   private readonly secret: string;
   private readonly expiresIn: string;
 

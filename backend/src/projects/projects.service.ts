@@ -1,24 +1,26 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaClient, Project, Status } from 'generated/prisma';
 import { CreateProjectDto } from 'src/dto/create.project.dto';
 import { UpdateProjectDto } from 'src/dto/update.project.dto';
+import { MailerService } from '../mailer/mailer.service';
 import { ApiResponseService } from '../shared/api-response.service';
-import { ApiResponse } from '../shared/interfaces/api-response.interfaces';
 
 @Injectable()
 export class ProjectsService {
   private prisma: PrismaClient;
 
-  constructor(private readonly apiResponse: ApiResponseService) {
+  constructor(
+    private readonly apiResponse: ApiResponseService,
+    private readonly mailerService: MailerService,
+    private readonly configService: ConfigService, // Add this
+  ) {
     this.prisma = new PrismaClient();
   }
 
   // create a project
-  async createProject(
-    data: CreateProjectDto,
-  ): Promise<ApiResponse<Project | null>> {
+  async createProject(data: CreateProjectDto): Promise<Project> {
     try {
       const newProject = await this.prisma.project.create({
         data: {
@@ -26,81 +28,50 @@ export class ProjectsService {
           endDate: new Date(data.endDate),
         },
       });
-      return this.apiResponse.success(
-        newProject,
-        'Project created successfully',
-      );
+      return newProject;
     } catch (error) {
-      return this.apiResponse.error(
-        `Error creating project: ${error.message}`,
-        null,
-      );
+      throw new Error(`Error creating project: ${error.message}`);
     }
   }
 
   // get all projects
-  async getAllProjects(): Promise<ApiResponse<Project[]>> {
+  async getAllProjects(): Promise<Project[]> {
     try {
-      const projects = await this.prisma.project.findMany({
+      return await this.prisma.project.findMany({
         orderBy: { id: 'asc' },
       });
-      return this.apiResponse.success(
-        projects,
-        'Projects retrieved successfully',
-      );
     } catch (error) {
-      // Add type assertion to tell TypeScript this is definitely a Project[] and not null
-      return this.apiResponse.error(
-        'Error fetching projects',
-        [] as Project[],
-      ) as ApiResponse<Project[]>;
+      throw new Error(`Error fetching projects: ${error.message}`);
     }
   }
 
   // get a project by id
-  async getProjectById(id: string): Promise<ApiResponse<Project | null>> {
+  async getProjectById(id: string): Promise<Project> {
     try {
       const project = await this.prisma.project.findUnique({ where: { id } });
       if (!project) {
-        return this.apiResponse.error('Project not found', null);
+        throw new Error(`Project with id ${id} not found`);
       }
-      return this.apiResponse.success(
-        project,
-        'Project retrieved successfully',
-      );
+      return project;
     } catch (error) {
-      return this.apiResponse.error(
-        `Error fetching project: ${error.message}`,
-        null,
-      );
+      throw new Error(`Error fetching project: ${error.message}`);
     }
   }
 
   // update a project
-  async updateProject(
-    id: string,
-    data: UpdateProjectDto,
-  ): Promise<ApiResponse<Project | null>> {
+  async updateProject(id: string, data: UpdateProjectDto): Promise<Project> {
     try {
       const project = await this.prisma.project.findUnique({ where: { id } });
       if (!project) {
-        return this.apiResponse.error('Project not found', null);
+        throw new Error(`Project with id ${id} not found`);
       }
 
-      const updatedProject = await this.prisma.project.update({
+      return await this.prisma.project.update({
         where: { id },
         data,
       });
-
-      return this.apiResponse.success(
-        updatedProject,
-        'Project updated successfully',
-      );
     } catch (error) {
-      return this.apiResponse.error(
-        `Error updating project: ${error.message}`,
-        null,
-      );
+      throw new Error(`Error updating project: ${error.message}`);
     }
   }
 
@@ -108,54 +79,87 @@ export class ProjectsService {
   async updateProjectStatus(
     id: string,
     status: Status,
-  ): Promise<ApiResponse<Project | null>> {
+    userId?: string,
+  ): Promise<Project> {
     try {
-      const project = await this.prisma.project.findUnique({ where: { id } });
+      const project = await this.prisma.project.findUnique({
+        where: { id },
+        include: {
+          assignedUser: true,
+        },
+      });
+
       if (!project) {
-        return this.apiResponse.error('Project not found', null);
+        throw new Error(`Project with id ${id} not found`);
       }
 
       if (!project.userId) {
-        return this.apiResponse.error(
+        throw new Error(
           'Cannot update status: Project is not assigned to any user',
-          null,
         );
+      }
+
+      // If userId is provided (user making the request), verify they own the project
+      if (userId && project.userId !== userId) {
+        throw new Error('You are not authorized to update this project');
+      }
+
+      // Only allow users to mark projects as completed
+      if (userId && status !== 'COMPLETED') {
+        throw new Error('Users can only mark projects as completed');
       }
 
       const updatedProject = await this.prisma.project.update({
         where: { id },
         data: {
-          status: status,
+          status,
           isCompleted: status === 'COMPLETED',
           completedAt: status === 'COMPLETED' ? new Date() : null,
         },
+        include: {
+          assignedUser: true,
+        },
       });
 
-      return this.apiResponse.success(
-        updatedProject,
-        `Project status updated to ${status}`,
-      );
+      // Send email to admin if project is marked as completed
+      if (status === 'COMPLETED') {
+        // Get admin email from config
+        const adminEmail = this.configService.get<string>(
+          'ADMIN_EMAIL',
+          'melissamakeba@gmail.com',
+        );
+
+        await this.mailerService
+          .sendCompletionEmail(adminEmail, {
+            name: 'Admin',
+            projectName: updatedProject.name,
+            projectDescription: updatedProject.description,
+            completedDate: new Date().toLocaleDateString(),
+            assignedUser: updatedProject.assignedUser?.name || 'A user',
+          })
+          .catch((error) => {
+            console.error('Failed to send completion email to admin:', error);
+            // Continue execution even if email fails
+          });
+      }
+
+      return updatedProject;
     } catch (error) {
-      console.error('Error occurred while updating project', error);
-      return this.apiResponse.error(
-        `Error updating project status: ${error.message}`,
-        null,
-      );
+      throw new Error(`Error updating project status: ${error.message}`);
     }
   }
 
   // delete a project
-  async deleteProject(id: string): Promise<ApiResponse<null>> {
+  async deleteProject(id: string): Promise<void> {
     try {
       const project = await this.prisma.project.findUnique({ where: { id } });
       if (!project) {
-        return this.apiResponse.error('Project not found');
+        throw new Error(`Project with id ${id} not found`);
       }
 
       await this.prisma.project.delete({ where: { id } });
-      return this.apiResponse.success(null, 'Project deleted successfully');
     } catch (error) {
-      return this.apiResponse.error(`Error deleting project: ${error.message}`);
+      throw new Error(`Error deleting project: ${error.message}`);
     }
   }
 
@@ -163,50 +167,44 @@ export class ProjectsService {
   async assignProjectToUser(
     projectId: string,
     userId: string,
-  ): Promise<ApiResponse<Project | null>> {
+  ): Promise<Project> {
     try {
-      // check project exists
+      // Check project exists
       const project = await this.prisma.project.findUnique({
         where: { id: projectId },
       });
+
       if (!project) {
-        return this.apiResponse.error(
-          `Project with id ${projectId} not found`,
-          null,
-        );
+        throw new Error(`Project with id ${projectId} not found`);
       }
 
-      // check user exists
+      // Check user exists
       const user = await this.prisma.user.findUnique({ where: { id: userId } });
       if (!user) {
-        return this.apiResponse.error(`User with id ${userId} not found`, null);
+        throw new Error(`User with id ${userId} not found`);
       }
 
-      // check if project is already assigned to any user
+      // Check if project is already assigned
       if (project.userId) {
-        return this.apiResponse.error(
-          'Project is already assigned to a user',
-          null,
-        );
+        throw new Error('Project is already assigned to a user');
       }
 
-      // check if user already has a project (not completed or pending)
-      const userHasProject = await this.prisma.project.findMany({
+      // Check if user already has an active project
+      const userActiveProjects = await this.prisma.project.findMany({
         where: {
           userId,
-          status: { notIn: ['COMPLETED', 'PENDING'] },
+          status: {
+            in: [Status.IN_PROGRESS],
+          },
         },
       });
 
-      if (userHasProject.length > 0) {
-        return this.apiResponse.error(
-          'User already has an active project',
-          null,
-        );
+      if (userActiveProjects.length > 0) {
+        throw new Error('User already has an active project');
       }
 
-      // assign project to user
-      const updatedProject = await this.prisma.project.update({
+      // Assign project to user
+      const assignedProject = await this.prisma.project.update({
         where: { id: projectId },
         data: {
           userId,
@@ -217,47 +215,55 @@ export class ProjectsService {
         },
       });
 
-      return this.apiResponse.success(
-        updatedProject,
-        'Project assigned successfully',
-      );
+      // Send email notification to the user
+      if (assignedProject.assignedUser && assignedProject.assignedUser.email) {
+        await this.mailerService
+          .sendAssignmentEmail(assignedProject.assignedUser.email, {
+            name: assignedProject.assignedUser.name || 'User',
+            projectName: assignedProject.name,
+            projectDescription: assignedProject.description,
+            dueDate: assignedProject.endDate.toLocaleDateString(),
+          })
+          .catch((error) => {
+            console.error('Failed to send assignment email:', error);
+            // Continue execution even if email fails
+          });
+      }
+
+      return assignedProject;
     } catch (error) {
-      return this.apiResponse.error(
-        `Error assigning project: ${error.message}`,
-        null,
-      );
+      throw new Error(`Error assigning project: ${error.message}`);
     }
   }
 
-  // user to view their assigned project
-  async viewOwnProject(userId: string): Promise<ApiResponse<Project | null>> {
+  // view user's assigned project
+  async viewOwnProject(userId: string): Promise<Project[]> {
     try {
+      // Check user exists
       const user = await this.prisma.user.findUnique({ where: { id: userId } });
       if (!user) {
-        return this.apiResponse.error(`User with id ${userId} not found`, null);
+        throw new Error(`User with id ${userId} not found`);
       }
 
-      const userHasProject = await this.prisma.project.findFirst({
+      // Get user's projects
+      const projects = await this.prisma.project.findMany({
         where: { userId },
       });
 
-      if (!userHasProject) {
-        return this.apiResponse.error('No project assigned to you', null);
+      if (projects.length === 0) {
+        throw new Error('No projects assigned to this user');
       }
 
-      return this.apiResponse.success(userHasProject, 'Your assigned project');
+      return projects;
     } catch (error) {
-      return this.apiResponse.error(
-        `Error retrieving assigned project: ${error.message}`,
-        null,
-      );
+      throw new Error(`Error retrieving user projects: ${error.message}`);
     }
   }
 
   // admin to view completed projects
-  async viewCompletedProjects(): Promise<ApiResponse<Project[]>> {
+  async viewCompletedProjects(): Promise<Project[]> {
     try {
-      const completedProjects = await this.prisma.project.findMany({
+      return await this.prisma.project.findMany({
         where: {
           status: Status.COMPLETED,
         },
@@ -271,44 +277,28 @@ export class ProjectsService {
           },
         },
       });
-
-      return this.apiResponse.success(
-        completedProjects,
-        'Completed projects retrieved successfully',
-      );
     } catch (error) {
-      return this.apiResponse.error(
-        `Error fetching completed projects: ${error.message}`,
-        [] as Project[],
-      ) as ApiResponse<Project[]>;
+      throw new Error(`Error fetching completed projects: ${error.message}`);
     }
   }
 
   // admin to view pending projects
-  async viewPendingProjects(): Promise<ApiResponse<Project[]>> {
+  async viewPendingProjects(): Promise<Project[]> {
     try {
-      const pendingProjects = await this.prisma.project.findMany({
+      return await this.prisma.project.findMany({
         where: {
           status: Status.PENDING,
         },
       });
-
-      return this.apiResponse.success(
-        pendingProjects,
-        'Pending projects retrieved successfully',
-      );
     } catch (error) {
-      return this.apiResponse.error(
-        `Error fetching pending projects: ${error.message}`,
-        [] as Project[],
-      ) as ApiResponse<Project[]>;
+      throw new Error(`Error fetching pending projects: ${error.message}`);
     }
   }
 
-  // admin to view in progress projects
-  async viewInProgressProjects(): Promise<ApiResponse<Project[]>> {
+  // admin to view in-progress projects
+  async viewInProgressProjects(): Promise<Project[]> {
     try {
-      const inProgressProjects = await this.prisma.project.findMany({
+      return await this.prisma.project.findMany({
         where: {
           status: Status.IN_PROGRESS,
         },
@@ -322,16 +312,46 @@ export class ProjectsService {
           },
         },
       });
-
-      return this.apiResponse.success(
-        inProgressProjects,
-        'In progress projects retrieved successfully',
-      );
     } catch (error) {
-      return this.apiResponse.error(
-        `Error fetching in-progress projects: ${error.message}`,
-        [] as Project[],
-      ) as ApiResponse<Project[]>;
+      throw new Error(`Error fetching in-progress projects: ${error.message}`);
+    }
+  }
+
+  // Add this method to allow users to update their own projects
+  async updateOwnProject(
+    id: string,
+    userId: string,
+    data: UpdateProjectDto,
+  ): Promise<Project> {
+    try {
+      const project = await this.prisma.project.findUnique({
+        where: { id },
+        include: { assignedUser: true },
+      });
+
+      if (!project) {
+        throw new Error(`Project with id ${id} not found`);
+      }
+
+      // Check if the project is assigned to this user
+      if (project.userId !== userId) {
+        throw new Error('You are not authorized to update this project');
+      }
+
+      // Users should only be able to update certain fields, not all
+      const allowedUpdateData: Partial<UpdateProjectDto> = {
+        // Allow users to update name and description only
+        name: data.name,
+        description: data.description,
+        // Status updates are handled by updateProjectStatus method
+      };
+
+      return await this.prisma.project.update({
+        where: { id },
+        data: allowedUpdateData,
+      });
+    } catch (error) {
+      throw new Error(`Error updating project: ${error.message}`);
     }
   }
 }

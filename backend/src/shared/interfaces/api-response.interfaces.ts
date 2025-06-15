@@ -1,14 +1,19 @@
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
+  [x: string]: any;
   success: boolean;
   message: string;
-  data: T | null;
+  data?: T;
   timestamp?: string;
   path?: string;
   code?: number;
-  errors?: Record<string, any>;
+  error?: string;
+  errors?: Record<string, string[]>;
+  token?: string;
 }
 
-export interface PaginatedApiResponse<T = any> extends ApiResponse<T[]> {
+export interface PaginatedApiResponse<T>
+  extends Omit<ApiResponse<T[]>, 'data'> {
+  data: T[];
   pagination: {
     page: number;
     limit: number;

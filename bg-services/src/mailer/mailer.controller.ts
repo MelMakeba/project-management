@@ -1,7 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { Body, Controller, Post } from '@nestjs/common';
-import { MailerService } from './mailer.service';
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import {
+  MailerService,
+  ProjectAssignmentContext,
+  ProjectCompletionContext,
+} from './mailer.service';
 
 @Controller('mailer')
 export class MailerController {
@@ -9,36 +11,55 @@ export class MailerController {
 
   @Post('test-assignment-email')
   async testAssignmentEmail(@Body() body: { email: string; name: string }) {
-    return this.mailerService.sendAssignmentEmail({
-      email: body.email,
+    // Create context object for assignment email
+    const context: ProjectAssignmentContext = {
       name: body.name,
       projectName: 'Test Project',
       projectDescription: 'This is a test project assignment email',
       dueDate: '2025-07-01',
-    });
+    };
+
+    return this.mailerService.sendAssignmentEmail(body.email, context);
   }
 
   @Post('test-completion-email')
   async testCompletionEmail(@Body() body: { email: string; name: string }) {
-    return this.mailerService.sendCompletionEmail({
-      email: body.email,
+    // Create context object for completion email
+    const context: ProjectCompletionContext = {
       name: body.name,
       projectName: 'Test Project',
       projectDescription: 'This is a test project completion email',
       completedDate: new Date().toLocaleDateString(),
       assignedUser: 'Test User',
-      projectId: '12345',
-    });
+    };
+
+    return this.mailerService.sendCompletionEmail(body.email, context);
   }
 
   @Post('send-direct')
-  async sendDirect(@Body() emailData: any) {
+  async sendDirect(
+    @Body()
+    emailData: {
+      email: string;
+      subject: string;
+      template?: string;
+      context?: Record<string, any>;
+      html?: string;
+      text?: string;
+    },
+  ) {
     return this.mailerService.sendEmail({
-      recipient: emailData.email,
+      to: emailData.email,
       subject: emailData.subject,
-      templateName: emailData.templateName,
-      templateData: emailData.templateData,
-      content: emailData.content,
+      template: emailData.template,
+      context: emailData.context,
+      html: emailData.html,
+      text: emailData.text,
     });
+  }
+
+  @Get('health')
+  async healthCheck() {
+    return this.mailerService.healthCheck();
   }
 }

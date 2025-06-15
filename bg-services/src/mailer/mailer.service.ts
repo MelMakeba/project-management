@@ -1,117 +1,112 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
-import * as ejs from 'ejs';
+import { ConfigService } from '@nestjs/config';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as ejs from 'ejs';
+import { PrismaClient } from '../../generated/prisma';
 
 export interface EmailOptions {
-  recipient: string;
+  to: string;
   subject: string;
-  templateName?: string;
-  templateData?: Record<string, any>;
-  content?: string;
+  template?: string;
+  context?: Record<string, any>;
+  html?: string;
+  text?: string;
+}
+
+export interface ProjectAssignmentContext {
+  name: string;
+  projectName: string;
+  projectDescription?: string;
+  dueDate?: string;
+  loginUrl?: string;
+}
+
+export interface ProjectCompletionContext {
+  name: string;
+  projectName: string;
+  projectDescription?: string;
+  completedDate?: string;
+  assignedUser?: string;
+  viewProjectUrl?: string;
 }
 
 @Injectable()
 export class MailerService {
   private readonly logger = new Logger(MailerService.name);
   private transporter: nodemailer.Transporter;
-  private templatesDir: string;
-  private etherealUrl: string;
+  private templatesPath: string;
 
-  constructor(
-    private prisma: PrismaService,
-    private configService: ConfigService,
-  ) {
+  private prisma: PrismaClient;
+
+  constructor(private configService: ConfigService) {
+    this.prisma = new PrismaClient();
+    // Using a more direct path approach like the template
+    this.templatesPath = path.join(process.cwd(), 'src/templates');
     this.initializeTransporter();
-
-    // Set up template directory
-    if (process.env.NODE_ENV === 'production') {
-      this.templatesDir = path.join(process.cwd(), 'dist', 'templates');
-    } else {
-      this.templatesDir = path.join(process.cwd(), 'src', 'templates');
-    }
-
-    this.logger.log(`Templates directory: ${this.templatesDir}`);
   }
 
-  private async initializeTransporter() {
-    try {
-      // Always use Ethereal for testing to avoid SMTP issues
-      const account = await nodemailer.createTestAccount();
-      this.transporter = nodemailer.createTransport({
-        host: account.smtp.host,
-        port: account.smtp.port,
-        secure: account.smtp.secure,
-        auth: {
-          user: account.user,
-          pass: account.pass,
-        },
-      });
-      this.etherealUrl = account.web;
-      this.logger.log(`Test email account created: ${this.etherealUrl}`);
-      this.logger.log(`All sent emails can be viewed at: ${this.etherealUrl}`);
-    } catch (error) {
-      this.logger.error(
-        `Failed to initialize email transporter: ${error.message}`,
-      );
-      throw error;
-    }
+  private initializeTransporter() {
+    // Simplified configuration following the template
+    const smtpConfig = {
+      host: this.configService.get<string>('SMTP_HOST', 'smtp.gmail.com'),
+      port: parseInt(this.configService.get<string>('SMTP_PORT', '587')),
+      secure: this.configService.get<string>('SMTP_SECURE', 'false') === 'true',
+      auth: {
+        user: this.configService.get<string>('SMTP_USER'),
+        pass: this.configService.get<string>('SMTP_PASS'),
+      },
+      tls: {
+        rejectUnauthorized: false, // Add this for Gmail
+      },
+    };
+
+    this.transporter = nodemailer.createTransport(smtpConfig);
+    this.logger.log('Email transporter initialized successfully');
   }
 
-  // Send email directly - main method that handles all email sending
+  // Simplified sendEmail method following the template
   async sendEmail(
     options: EmailOptions,
-  ): Promise<{ success: boolean; url?: string; error?: string }> {
+  ): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
-      const { recipient, subject, templateName, templateData, content } =
-        options;
+      let html = options.html;
 
-      // Get content either from template or direct content
-      let html = content || '';
-      if (templateName) {
-        html = await this.renderTemplate(templateName, templateData || {});
+      if (options.template && options.context) {
+        html = await this.renderTemplate(options.template, options.context);
       }
 
-      if (!html) {
-        throw new Error('Email content is required');
-      }
-
-      // Send email
-      const result = await this.transporter.sendMail({
-        from:
-          this.configService.get('SMTP_FROM') ||
-          'project-management@example.com',
-        to: recipient,
-        subject,
+      const mailOptions = {
+        from: this.configService.get<string>(
+          'SMTP_FROM',
+          this.configService.get<string>('SMTP_USER', ''),
+        ),
+        to: options.to,
+        subject: options.subject,
         html,
-      });
+        text: options.text,
+      };
 
-      // Log success
-      this.logger.log(`Email sent to ${recipient}: ${result.messageId}`);
+      const result = await this.transporter.sendMail(mailOptions);
+      this.logger.log(
+        `Email sent successfully to ${options.to}: ${result.messageId}`,
+      );
 
-      // For Ethereal emails, provide preview URL
-      const previewUrl = nodemailer.getTestMessageUrl(result);
-      if (previewUrl) {
-        this.logger.log(`Preview URL: ${previewUrl}`);
-      }
-
-      // Log to database for record-keeping
+      // Log to database but don't let failures stop the flow
       try {
         await this.prisma.emailLog.create({
           data: {
-            recipient,
-            subject,
-            templateName,
-            templateData,
-            content: html,
+            recipient: options.to,
+            subject: options.subject,
+            templateName: options.template,
+            templateData: options.context,
+            content: html || options.text || '',
             status: 'SENT',
             sentAt: new Date(),
           },
@@ -120,117 +115,118 @@ export class MailerService {
         this.logger.warn(`Failed to log email to database: ${dbError.message}`);
       }
 
-      return {
-        success: true,
-        url: previewUrl || this.etherealUrl,
-      };
+      return { success: true, messageId: result.messageId };
     } catch (error) {
-      this.logger.error(`Failed to send email: ${error.message}`);
+      this.logger.error(
+        `Failed to send email to ${options.to}: ${error.message}`,
+      );
 
       // Try to log failure to database
       try {
         await this.prisma.emailLog.create({
           data: {
-            recipient: options.recipient,
+            recipient: options.to,
             subject: options.subject,
-            templateName: options.templateName,
-            templateData: options.templateData,
-            content: options.content || '',
+            templateName: options.template,
+            templateData: options.context,
+            content: options.html || options.text || '',
             status: 'FAILED',
-            attemptCount: 1,
+            error: error.message, // Uncomment this line
           },
         });
       } catch (dbError) {
-        this.logger.error(`Failed to log email failure: ${dbError.message}`);
+        this.logger.warn(`Failed to log email failure: ${dbError.message}`);
       }
 
       return { success: false, error: error.message };
     }
   }
 
+  async sendAssignmentEmail(
+    to: string,
+    context: ProjectAssignmentContext,
+  ): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    const emailOptions: EmailOptions = {
+      to,
+      subject: `New Project Assignment: ${context.projectName}`,
+      template: 'project-assignment',
+      context: {
+        ...context,
+        loginUrl:
+          context.loginUrl ||
+          `${this.configService.get<string>('FRONTEND_URL', 'http://localhost:3000')}/projects`,
+        dueDate: context.dueDate || 'Not specified',
+      },
+    };
+    return this.sendEmail(emailOptions);
+  }
+
+  async sendCompletionEmail(
+    to: string,
+    context: ProjectCompletionContext,
+  ): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    const emailOptions: EmailOptions = {
+      to,
+      subject: `Project Completed: ${context.projectName}`,
+      template: 'project-completion',
+      context: {
+        ...context,
+        completedDate: context.completedDate || new Date().toLocaleDateString(),
+        assignedUser: context.assignedUser || 'Team member',
+        viewProjectUrl:
+          context.viewProjectUrl ||
+          `${this.configService.get<string>('FRONTEND_URL', 'http://localhost:3000')}/projects`,
+      },
+    };
+    return this.sendEmail(emailOptions);
+  }
+
   private async renderTemplate(
     templateName: string,
-    data: Record<string, any>,
+    context: Record<string, any>,
   ): Promise<string> {
     try {
-      let filename = templateName;
-
+      // Simplify the template mapping
       const templateMap = {
         'project-assignment': 'assignment_email.ejs',
         'project-completion': 'completion_project.ejs',
       };
 
-      if (templateMap[templateName]) {
-        filename = templateMap[templateName];
-      } else if (!filename.endsWith('.ejs')) {
-        filename = `${filename}.ejs`;
+      const filename = templateMap[templateName] || `${templateName}.ejs`;
+      const templatePath = path.join(this.templatesPath, filename);
+
+      if (!fs.existsSync(templatePath)) {
+        throw new Error(
+          `Template ${templateName} not found at ${templatePath}`,
+        );
       }
 
-      const templatePath = path.join(this.templatesDir, filename);
+      const templateOptions = {
+        filename: templatePath,
+        cache: process.env.NODE_ENV === 'production',
+        compileDebug: process.env.NODE_ENV !== 'production',
+      };
 
-      // Check if template exists
-      try {
-        await fs.promises.access(templatePath);
-        this.logger.log(`Using template: ${templatePath}`);
-      } catch {
-        this.logger.error(`Template not found at ${templatePath}`);
-        throw new Error(`Template not found: ${filename}`);
-      }
-
-      return await ejs.renderFile(templatePath, data);
+      const html = await ejs.renderFile(templatePath, context, templateOptions);
+      return html;
     } catch (error) {
-      this.logger.error(`Error rendering template: ${error.message}`);
+      this.logger.error(
+        `Template rendering failed for ${templateName}: ${error.message}`,
+      );
       throw error;
     }
   }
 
-  // Convenience methods for specific email types
-  async sendAssignmentEmail(options: {
-    email: string;
-    name: string;
-    projectName: string;
-    projectDescription?: string;
-    dueDate?: string;
-  }): Promise<{ success: boolean; url?: string; error?: string }> {
-    return this.sendEmail({
-      recipient: options.email,
-      subject: `New Project Assignment: ${options.projectName}`,
-      templateName: 'project-assignment',
-      templateData: {
-        name: options.name,
-        projectName: options.projectName,
-        projectDescription: options.projectDescription || '',
-        dueDate: options.dueDate || 'Not specified',
-        loginUrl:
-          this.configService.get('FRONTEND_URL', 'http://localhost:3000') +
-          '/projects',
-      },
-    });
-  }
-
-  async sendCompletionEmail(options: {
-    email: string;
-    name: string;
-    projectName: string;
-    projectDescription?: string;
-    completedDate?: string;
-    assignedUser?: string;
-    projectId?: string;
-  }): Promise<{ success: boolean; url?: string; error?: string }> {
-    return this.sendEmail({
-      recipient: options.email,
-      subject: `Project Completed: ${options.projectName}`,
-      templateName: 'project-completion',
-      templateData: {
-        name: options.name,
-        projectName: options.projectName,
-        projectDescription: options.projectDescription || '',
-        completedDate: options.completedDate || new Date().toLocaleDateString(),
-        assignedUser: options.assignedUser || 'Team member',
-        viewProjectUrl:
-          this.configService.get('FRONTEND_URL', 'http://localhost:3000') +
-          `/projects/${options.projectId || ''}`,
-      },
-    });
+  async healthCheck(): Promise<{ status: string; details?: string }> {
+    try {
+      // Simple connection check
+      await this.transporter.verify();
+      return { status: 'ok' };
+    } catch (error) {
+      return {
+        status: 'error',
+        details: error.message,
+      };
+    }
   }
 }

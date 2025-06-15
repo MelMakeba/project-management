@@ -5,7 +5,7 @@ POST {{baseurl}}/mailer/test-assignment-email
 Content-Type: application/json
 
 {
-    "email": "mellisamakeba@gmail.com",
+    "email": "melissamakeba@gmail.com",
     "name": "Mellisa Waititu"
 }
 

@@ -16,7 +16,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzYjllNGI2O
 
 ### Get all users
 GET http://localhost:3000/users
-
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MTE2ZDJiMi00NDY0LTQ5ZTQtYWMyNS00MmIzY2UyMDUwZjAiLCJlbWFpbCI6Im1lbGlzc2FtYWtlYmFAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUwMDI1Nzk4LCJleHAiOjE3NTAxMTIxOTh9.iHTphrBrleH2xge4WrzJYSiXjJRW5PuAsNJHxUda-4Q
 ###
 
 ### Get user by ID
