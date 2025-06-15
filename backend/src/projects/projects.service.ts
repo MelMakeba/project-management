@@ -89,7 +89,9 @@ export class ProjectsService {
       if (!project) {
         throw new InternalServerErrorException('Project not found');
       }
-  
+      if(!project.userId){
+        throw new ConflictException('Cannot update status: Project is not assigned to any user');
+      }
       return await this.prisma.project.update({
         where: { id },
         data: {
@@ -180,7 +182,7 @@ export class ProjectsService {
         where: { userId }
       });
       if (!userHasProject) {
-        throw new NotFoundException('User does not have a project assigned');
+        throw new NotFoundException('No project assigned to you');
       }
       return userHasProject;
     } catch (error) {

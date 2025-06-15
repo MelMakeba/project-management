@@ -222,7 +222,7 @@ export class ProjectsController {
           console.error('Error',error)
           return{
             success: false,
-            message: 'Error viewing own projects',
+            message: 'You have no assigned projects',
             error: error instanceof Error ? error.message : 'Unknown error',
           }
         }
