@@ -58,6 +58,7 @@ export class ProjectsService {
       }
       return project;
     } catch (error) {
+      console.error('Error retrieving project by ID:', error);
       throw new InternalServerErrorException('Error fetching project');
     }
   }
@@ -88,20 +89,21 @@ export class ProjectsService {
       if (!project) {
         throw new InternalServerErrorException('Project not found');
       }
+  
       return await this.prisma.project.update({
         where: { id },
-        data:{
-          status: 'IN_PROGRESS'
-        }
+        data: {
+          status: status, 
+          isCompleted: status === 'COMPLETED',
+          completedAt: status === 'COMPLETED' ? new Date() : null
+        },
       });
     } catch (error) {
-      console.error("Error occured while updating project",error)
-      if (error instanceof ConflictException) {
-        throw error;
-      }
+      console.error("Error occurred while updating project", error);
       throw new InternalServerErrorException('Error updating project status', error.message);
     }
   }
+  
 
   // delete a project
   async deleteProject(id: string): Promise<void> {
@@ -185,4 +187,44 @@ export class ProjectsService {
       throw error;
     }
   }
+
+  // admin to view completed projects where status is COMPLETED ✅
+  async viewCompletedProjects(): Promise<Project[]> {
+    return this.prisma.project.findMany({
+      where: {
+        status:Status.COMPLETED,
+      },
+    });
+  }
+  
+
+  // admin to view pending projects where status is PENDING 🐧
+  async viewPendingProjects(): Promise<Project[]>{
+    try{
+      // filter projects where status is PENDING
+      const pendingProjects = await this.prisma.project.findMany({
+        where: {
+          status: Status.PENDING
+        },
+      });
+      return pendingProjects;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+    // admin to view pending projects where status is PENDING 🐧
+    async viewInProgressProjects(): Promise<Project[]>{
+      try{
+        // filter projects where status is PENDING
+        const pendingProjects = await this.prisma.project.findMany({
+          where: {
+            status: Status.IN_PROGRESS
+          },
+        });
+        return pendingProjects;
+      } catch (error) {
+        throw error;
+      }
+    }
 }

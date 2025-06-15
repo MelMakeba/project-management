@@ -18,3 +18,14 @@ Content-Type: application/json
   "email": "brian@gmail.com",
   "password": "shal00j1010"
 }
+
+###
+
+### Login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "jonathanmulingemwandi@gmail.com",
+  "password": "shal00j1010"
+}

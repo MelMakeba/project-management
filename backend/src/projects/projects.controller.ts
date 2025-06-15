@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
@@ -24,7 +26,6 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt/jwtAuth.guard';
 import { CreateProjectDto } from 'src/dto/create.project.dto';
 import { UpdateProjectDto } from 'src/dto/update.project.dto';
 import { Status } from 'generated/prisma';
-import { data } from 'react-router-dom';
 
 @Controller('projects')
 export class ProjectsController {
@@ -75,6 +76,77 @@ export class ProjectsController {
     }
   }
 
+  @Get('status/completed')
+  @UseGuards(JwtAuthGuard, PermissionGuard)
+  @RequirePermissions(Permission.VIEW_ALL_PROJECTS)
+  async getCompletedProjects(): Promise<ApiResponse<Project[]>> {
+    console.log('✅ /projects/completed endpoint hit');
+    try {
+      const projects = await this.projectsService.viewCompletedProjects(); 
+      console.log('✅ Completed projects from DB:', projects);
+      return {
+        success: true,
+        data: projects,
+        message: `${projects.length} completed projects retrieved successfully`,
+      };
+    } catch (error) {
+      console.log('Error retrieving completed projects:', error);
+      return {
+        success: false,
+        message: 'Error retrieving completed projects',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  /**
+   * @Get() pending projects
+   * @param id 
+   * @returns 
+   */
+  @Get('status/pending')
+  @UseGuards(JwtAuthGuard, PermissionGuard)
+  @RequirePermissions(Permission.VIEW_ALL_PROJECTS)
+  async getPendingProjects(): Promise<ApiResponse<Project[]>>{
+    try {
+      const projects = await this.projectsService.viewPendingProjects();
+      return {
+        success: true,
+        data: projects,
+        message: `Retrieved ${projects.length} pending projects successfully`,
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error retrieving pending projects',
+      }
+    }
+  }
+
+  /**
+   * @Get()
+   * @param id 
+   * @returns project[]
+   */
+  @Get('status/in_progress')
+  @UseGuards(JwtAuthGuard, PermissionGuard)
+  @RequirePermissions(Permission.VIEW_ALL_PROJECTS)
+  async getProjects(): Promise<ApiResponse<Project[]>>{
+    try {
+      const projects = await this.projectsService.viewInProgressProjects();
+      return {
+        success: true,
+        data: projects,
+        message: `Retrieved ${projects.length} in_progress projects successfully`,
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error retrieving in_progress projects',
+      }
+    }
+  }
+
   // get ProjectById
   @Get(':id')
   @UseGuards(JwtAuthGuard, PermissionGuard)
@@ -95,6 +167,8 @@ export class ProjectsController {
       };
     }
   }
+
+  
 
   // edit or update project (User Role)
   @Patch(':id')
@@ -208,9 +282,9 @@ export class ProjectsController {
   @Patch(':projectId/status')
   @UseGuards(JwtAuthGuard, PermissionGuard)
   @RequirePermissions(Permission.UPDATE_PROJECT_STATUS)
-  async updateProjectStatus(@Param('projectId') projectId: string, @Body() status: Status): Promise<ApiResponse<Project>>{
+  async updateProjectStatus(@Param('projectId') projectId: string, @Body() body: {status: Status}): Promise<ApiResponse<Project>>{
     try {
-      const project = await this.projectsService.updateProjectStatus(projectId, status);
+      const project = await this.projectsService.updateProjectStatus(projectId, body.status);
       return{
         success: true,
         data: project,
@@ -225,6 +299,12 @@ export class ProjectsController {
       }
     }
 
-
+    /**
+     * get all completed projects where status is COMPLETED
+     * @Get()
+     * @ UseGuards(JwtAuthGuard, PermissionGuard)
+     * @ RequirePermissions(Permission.GET_COMPLETED_PROJECTS)
+     * @ return projects[]
+     */
+    
   }
-

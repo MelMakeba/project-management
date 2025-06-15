@@ -17,7 +17,8 @@ GET http://localhost:3000/projects
 
 ### Get a project by ID
 GET http://localhost:3000/projects/857d12bb-8c1c-47b9-a414-017de5437694
-
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ODBiYzg4YS04ZWEwLTRiZGYtOTVhZS0yZTY0MGQ5MWU0NjgiLCJlbWFpbCI6ImpvbmF0aGFubXVsaW5nZW13YW5kaUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDk5NjkxMjksImV4cCI6MTc1MDA1NTUyOX0.kR7gJyrsV4fxJs_mwDQI6XpNQ69RGLyYhEb16cLnymc
 ###
 
 ### Update a project by ID
@@ -52,7 +53,7 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyYTA5NGMxMC1jZTVkLTRjNzMtOWYzZi1hOGI0NDU3NjA4NGUiLCJlbWFpbCI6ImJyaWFuQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzQ5OTMzODY5LCJleHAiOjE3NTAwMjAyNjl9.nN8ZWQW_tyNbqz2yhg_QiKXASEMXnbB0YA-lyjmf54c
 
 {
-  "status": "IN_PROGRESS" 
+  "status": "COMPLETED" 
 }
 
 ###
@@ -60,3 +61,21 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyYTA5NGMxM
 GET http://localhost:3000/projects/user/2a094c10-ce5d-4c73-9f3f-a8b44576084e
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyYTA5NGMxMC1jZTVkLTRjNzMtOWYzZi1hOGI0NDU3NjA4NGUiLCJlbWFpbCI6ImJyaWFuQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzQ5OTM2MDI2LCJleHAiOjE3NTAwMjI0MjZ9.6Mdhdj4W4IxbaFpPZ0ZWphYQUNKUQRiXyi2Tvi43EGc
+
+###
+### get completed projects
+GET http://localhost:3000/projects/status/completed
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ODBiYzg4YS04ZWEwLTRiZGYtOTVhZS0yZTY0MGQ5MWU0NjgiLCJlbWFpbCI6ImpvbmF0aGFubXVsaW5nZW13YW5kaUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDk5NjkxMjksImV4cCI6MTc1MDA1NTUyOX0.kR7gJyrsV4fxJs_mwDQI6XpNQ69RGLyYhEb16cLnymc
+
+###
+### get pending projects
+GET http://localhost:3000/projects/status/pending
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ODBiYzg4YS04ZWEwLTRiZGYtOTVhZS0yZTY0MGQ5MWU0NjgiLCJlbWFpbCI6ImpvbmF0aGFubXVsaW5nZW13YW5kaUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDk5NjkxMjksImV4cCI6MTc1MDA1NTUyOX0.kR7gJyrsV4fxJs_mwDQI6XpNQ69RGLyYhEb16cLnymc
+
+###
+### get in_progress projects
+GET http://localhost:3000/projects/status/in_progress
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ODBiYzg4YS04ZWEwLTRiZGYtOTVhZS0yZTY0MGQ5MWU0NjgiLCJlbWFpbCI6ImpvbmF0aGFubXVsaW5nZW13YW5kaUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDk5NjkxMjksImV4cCI6MTc1MDA1NTUyOX0.kR7gJyrsV4fxJs_mwDQI6XpNQ69RGLyYhEb16cLnymc
