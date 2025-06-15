@@ -1,13 +1,10 @@
-/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersService } from './users/users.service';
-import { UsersController } from './users/users.controller';
-import { ProjectsService } from './projects/projects.service';
-import { ProjectsController } from './projects/projects.controller';
+import { UsersModule } from './users/users.module';
+import { ProjectsModule } from './projects/projects.module';
 import { PermissionModule } from './permissions/permission.module';
 import { AuthModule } from './auth/auth.module';
 
@@ -18,16 +15,10 @@ import { AuthModule } from './auth/auth.module';
     }),
     PermissionModule,
     AuthModule,
+    UsersModule,
+    ProjectsModule,
   ],
-  controllers: [
-    AppController,
-    UsersController,
-    ProjectsController,
-  ],
-  providers: [
-    AppService,
-    UsersService,
-    ProjectsService,
-  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
