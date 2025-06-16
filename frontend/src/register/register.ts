@@ -56,7 +56,7 @@ interface User {
         email,
         password,
         role: 'USER',
-        id: "",
+        id: 0,
         token: ""
       };
   

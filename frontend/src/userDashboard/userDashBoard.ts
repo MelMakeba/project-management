@@ -56,7 +56,7 @@ interface User {
         markCompletedBtn.classList.remove('hidden');
         markCompletedBtn.onclick = async () => {
           try {
-            const completeRes = await fetch(`http://localhost:3000/${user.id}/project/complete`, {
+            const completeRes = await fetch(`http://localhost:3000/${user.id}/completed`, {
               method: 'PATCH',
               headers: {
                 'Content-Type': 'application/json',
