@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Dashboard</title>
+  <link rel="stylesheet" href="user.css" />
+</head>
+<body>
+  <input type="checkbox" id="checkbox" />
+
+  <header class="header">
+    <h2 class="u-name">
+      USER <b>DASHBOARD</b>
+      <label for="checkbox">
+        <ion-icon id="navbtn" name="menu-outline"></ion-icon>
+      </label>
+    </h2>
+    <div class="left-icons">
+      <ion-icon name="notifications-outline"></ion-icon>
+      <ion-icon name="person-circle-outline"></ion-icon>
+    </div>
+  </header>
+
+  <div class="body">
+    <nav class="side-bar">
+      <div class="user-p">
+        <ion-icon id="admin" name="person-circle-outline"></ion-icon>
+        <h4>User</h4>
+      </div>
+      <ul>
+        <li><a href="#"><ion-icon name="construct-outline"></ion-icon><span>Projects</span></a></li>
+        <li><a href="#"><ion-icon name="settings-outline"></ion-icon><span>Settings</span></a></li>
+        <li><a href="#"><ion-icon name="log-in-outline"></ion-icon><span>Logout</span></a></li>
+      </ul>
+    </nav>
+
+    <main class="main-content">
+      <h4>My Projects</h4>
+      <div class="all-projects" id="userProjects">
+        <!-- 
+        <div class="project-card complete">
+          <h4 class="project-title">Website Redesign</h4>
+          <p class="project-desc">Redesign the UI/UX for the marketing website using modern frameworks.</p>
+          <p class="project-date"><strong>Created At:</strong> 2025-06-01</p>
+          <button class="status-btn">Completed</button>
+        </div>
+
+        <div class="project-card incomplete">
+          <h4 class="project-title">Database Optimization</h4>
+          <p class="project-desc">Optimize queries to improve performance in analytics modules.</p>
+          <p class="project-date"><strong>Created At:</strong> 2025-06-05</p>
+          <button class="status-btn">Mark as Complete</button>
+        </div>
+        -->
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  <script src="../dist/user.js"></script> <!-- Link to your compiled TypeScript -->
+</body>
+</html>

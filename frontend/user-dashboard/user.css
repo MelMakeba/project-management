@@ -1,0 +1,207 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-color: #f5f7fa;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background: #23242b;
+  color: #fff;
+}
+
+.u-name {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.u-name b {
+  color: #127b8e;
+  margin-left: 5px;
+}
+
+.left-icons ion-icon {
+  font-size: 24px;
+  margin-left: 20px;
+  color: white;
+  cursor: pointer;
+}
+
+/* Sidebar */
+.side-bar {
+  width: 250px;
+  background: #262931;
+  max-height: 100%;
+  transition: 500ms width;
+}
+
+.user-p {
+  text-align: center;
+  padding-top: 25px;
+}
+
+.user-p h4 {
+  color: #ccc;
+  padding: 5px 0;
+}
+
+#admin {
+  font-size: 60px;
+  color: #fff;
+}
+
+.side-bar ul {
+  margin-top: 20px;
+  list-style: none;
+}
+
+.side-bar ul li {
+  font-size: 18px;
+  padding: 15px 20px;
+  transition: background 0.3s;
+}
+
+.side-bar ul li:hover {
+  background: #127b8e;
+}
+
+.side-bar ul li a {
+  text-decoration: none;
+  color: #eee;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.body {
+  display: flex;
+}
+
+#checkbox {
+  display: none;
+}
+
+#checkbox:checked ~ .body .side-bar {
+  width: 60px;
+}
+
+#checkbox:checked ~ .body .side-bar .user-p {
+  visibility: hidden;
+}
+
+#checkbox:checked ~ .body .side-bar a span {
+  display: none;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 30px;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+  gap: 5rem;
+}
+
+.main-content h3, .main-content h4 {
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.all-projects,
+.incomplete-projects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.project-card {
+  background-color: #23242b;
+  width: 30%;
+  padding: 20px 25px;
+  color: #0f6372;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.project-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.project-desc {
+  color: #fff;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.project-date {
+  color: #888;
+  margin-bottom: 15px;
+}
+
+.status-btn {
+  background-color: #127b8e;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.status-btn:hover {
+  background-color: #0f6372;
+}
+
+ion-icon {
+  font-size: 24px;
+}
+
+#navbtn {
+  font-size: 30px;
+  margin-left: 10px;
+  cursor: pointer;
+  color: #fff;
+}
+
+@media (max-width: 1024px) {
+  .project-card {
+    width: 45%;
+  }
+  .side-bar {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .project-card {
+    width: 100%;
+  }
+  .side-bar {
+    display: none;
+  }
+
+  .left-icons {
+    display: flex;
+    gap: 10px;
+  }
+
+  .left-icons ion-icon {
+    font-size: 20px;
+  }
+
+  .main-content {
+    padding: 15px;
+  }
+}
