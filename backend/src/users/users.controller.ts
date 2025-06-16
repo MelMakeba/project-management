@@ -22,7 +22,10 @@ import { ApiResponse } from 'src/shared/interfaces/api-response.interfaces';
 import { User } from 'src/interfaces/user.interface';
 import { UpdateUserDto } from 'src/dto/update.user.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('users')
+@ApiBearerAuth('JWT-auth')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

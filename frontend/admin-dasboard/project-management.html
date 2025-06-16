@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project-Management</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+     <div class="container">
+    <div class="card-project" id="project">
+      <h3>Create New Project</h3>
+      <form>
+        <label for="name">Project Name</label>
+        <input type="text" id="name" placeholder="Enter project name" />
+
+        <label for="endDate">End Date</label>
+        <input type="date" id="endDate" />
+
+        <label for="description">Description</label>
+        <textarea id="description" placeholder="Enter project description"></textarea>
+
+        <button type="submit">Create Project</button>
+      </form>
+    </div>
+
+    <div class="all-projects">
+      <h3>All Projects</h3>
+      <ul>
+        <!-- <li>Website Redesign - 2025-06-10</li>
+        <li>Mobile App Testing - 2025-06-05</li>
+        <li>Database Optimization - 2025-06-01</li> -->
+      </ul>
+    </div>
+
+    <div class="assign-projects">
+      <h3>Assign Project to User</h3>
+      <form>
+        <label for="userSelect">Select User</label>
+        <select id="userSelect">
+          <!-- <option>Brian Mwangi</option>
+          <option>Jonathan Mulinge</option>
+          <option>Mel Makeba</option> -->
+        </select>
+
+        <label for="projectSelect">Select Project</label>
+        <select id="projectSelect">
+          <!-- <option>Frontend Development</option>
+          <option> Backend Development</option>
+          <option>Database Optimization</option> -->
+        </select>
+
+        <button type="submit">Assign</button>
+      </form>
+    </div>
+
+    <div class="assigned-projects">
+      <h4>Assigned Projects</h4>
+      <ul>
+        <!-- <li>Brian Mwangi → Frontend Development</li>
+        <li>Jonathan Mulinge → Backend Development</li>
+        <li>Mel Makeba → Daatabase Optimization</li>
+        <li>Brian Mwangi → Frontend Development</li>
+        <li>Jonathan Mulinge → Backend Development</li>
+        <li>Mel Makeba → Database Optimization</li> -->
+      </ul>
+    </div>
+
+ <div class="delete-project">
+    <h5>Delete Project</h5>
+    <select name="delete" id="deleteprojectSelect">
+      <!-- <option value="">Select a project</option>
+      <option value="1">Project Alpha</option>
+      <option value="2">Project Beta</option>
+      <option value="3">Project Gamma</option> -->
+    </select>
+    <button class="delete-btn">Delete</button>
+  </div>
+
+    </div>
+    
+
+<script src="../dist/project_management.js"></script>
+</body>
+</html>

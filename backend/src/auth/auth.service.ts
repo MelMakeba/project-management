@@ -3,7 +3,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import * as bcrypt from 'bcryptjs';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { PrismaClient } from 'generated/prisma';
 import { JwtService } from './guards/jwt/jwt.service';
 import { LoginDto } from 'src/dto/login.dto';
@@ -26,9 +26,16 @@ export class AuthService {
   async login(loginDto: LoginDto): Promise<{ token: string; user: any }> {
     const { email, password } = loginDto;
     
+    // Add validation to ensure email isn't undefined
+    if (!email) {
+      throw new BadRequestException('Email is required');
+    }
+
     // Find user
     const user = await this.prisma.user.findUnique({
-      where: { email }
+      where: {
+        email: email.toLowerCase(), // Make sure to normalize email
+      },
     });
     
     if (!user) {
@@ -67,8 +74,17 @@ export class AuthService {
     try {
       const { email, password, name, role } = registerDto;
       
+      // Add validation to ensure email isn't undefined
+      if (!email) {
+        throw new BadRequestException('Email is required');
+      }
+
       // Check if user exists
-      const existingUser = await this.prisma.user.findUnique({ where: { email } });
+      const existingUser = await this.prisma.user.findUnique({
+        where: {
+          email: email.toLowerCase(), // Make sure to normalize email
+        },
+      });
       if (existingUser) {
         throw new Error('User already exists');
       }

@@ -22,12 +22,15 @@ import { RequirePermissions } from 'src/auth/decorator/permission.decorator';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
 import { ApiResponse } from '../shared/interfaces/api-response.interfaces';
 import { JwtAuthGuard } from 'src/auth/guards/jwt/jwtAuth.guard';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { CreateProjectDto } from 'src/dto/create.project.dto';
 import { UpdateProjectDto } from 'src/dto/update.project.dto';
 import { Status } from 'generated/prisma';
 import { Response } from 'express';
 
+@ApiTags('projects')
+@ApiBearerAuth('JWT-auth')
 @Controller('projects')
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}

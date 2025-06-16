@@ -1,7 +1,20 @@
 /* eslint-disable prettier/prettier */
+import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { Role } from 'generated/prisma';
+
 export class RegisterDto {
-  name: string;
+  @IsEmail()
+  @IsNotEmpty()
   email: string;
+
+  @IsString()
+  @IsNotEmpty()
   password: string;
-  role: 'ADMIN' | 'USER';
+
+  @IsString()
+  @IsNotEmpty()  
+  name: string;
+
+  @IsEnum(Role)
+  role: Role;
 }
