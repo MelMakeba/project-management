@@ -1,0 +1,34 @@
+@baseurl = http://localhost:3000
+
+### Assignment email
+POST {{baseurl}}/mailer/test-assignment-email
+Content-Type: application/json
+
+{
+    "email": "mellisamakeba@gmail.com",
+    "name": "Mellisa Waititu"
+}
+
+### Completion email
+POST {{baseurl}}/mailer/test-completion-email
+Content-Type: application/json
+
+{
+    "email": "melissamakeba@gmail.com",
+    "name": "Admin User"
+}
+
+### Send Direct Email
+POST {{baseurl}}/mailer/send-direct
+Content-Type: application/json
+
+{
+    "email": "project.manager@company.com",
+    "subject": "Project Update",
+    "templateName": "project-assignment",
+    "templateData": {
+        "name": "Project Manager",
+        "projectName": "Website Redesign",
+        "dueDate": "2025-06-20"
+    }
+}
