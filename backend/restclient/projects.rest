@@ -43,13 +43,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDgyMGFkO
 ###
 
 ### Assign project to a user
-PATCH http://localhost:3000/projects/4c4fc353-a3c3-42db-b3e0-06f90ff1f1a8/assign/1851e95e-a11e-46f3-a76a-c244c4e1c12b
+PATCH http://localhost:3000/projects/b1380899-a88b-447a-bdbe-e3915a7eed87/assign/683975fd-f421-4128-9344-e9ee68553844
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MTE2ZDJiMi00NDY0LTQ5ZTQtYWMyNS00MmIzY2UyMDUwZjAiLCJlbWFpbCI6Im1lbGlzc2FtYWtlYmFAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUwMDI1Nzk4LCJleHAiOjE3NTAxMTIxOTh9.iHTphrBrleH2xge4WrzJYSiXjJRW5PuAsNJHxUda-4Q
 
 ###
 ### Update project status //by Admin
-PATCH http://localhost:3000/projects/7247a10a-e4c8-416c-b43e-26520920274b/status
+PATCH http://localhost:3000/projects/b279f2c8-8ebe-4c6e-8520-7ffbcd9466bc/status
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MTE2ZDJiMi00NDY0LTQ5ZTQtYWMyNS00MmIzY2UyMDUwZjAiLCJlbWFpbCI6Im1lbGlzc2FtYWtlYmFAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUwMDI1Nzk4LCJleHAiOjE3NTAxMTIxOTh9.iHTphrBrleH2xge4WrzJYSiXjJRW5PuAsNJHxUda-4Q
 
@@ -59,7 +59,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MTE2ZDJiM
 
 ###
 ### User marking their project as completed
-PATCH http://localhost:3000/projects/user/4c4fc353-a3c3-42db-b3e0-06f90ff1f1a8/complete
+PATCH http://localhost:3000/projects/user/b1380899-a88b-447a-bdbe-e3915a7eed87/complete
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxODUxZTk1ZS1hMTFlLTQ2ZjMtYTc2YS1jMjQ0YzRlMWMxMmIiLCJlbWFpbCI6Im1lbGlzc2Eud2FpdGl0dWhAc3RyYXRobW9yZS5lZHUiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1MDAyODMxNiwiZXhwIjoxNzUwMTE0NzE2fQ.hnslnWAq9evPAIekInacsXYHtoZeHnY7lit-6FVRXu4
 

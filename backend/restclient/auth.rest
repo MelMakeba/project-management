@@ -14,9 +14,9 @@ POST http://localhost:3000/auth/register
 Content-Type: application/json
 
 {
-  "email": "melissa.waitituh@strathmore.edu",
-  "password": "Mel0023",
-  "name": "Mellisa Waits",
+  "email": "jonathanmulingemwandi@gmail.com",
+  "password": "Jona123",
+  "name": "Jonathan Mulinge",
   "role": "USER"
 }
 
@@ -27,8 +27,8 @@ POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-  "email": "melissamakeba@gmail.com",
-  "password": "Mel143"
+  "email": "brianmwasbayo@gmail.com",
+  "password": "Kishoyan12"
 }
 
 ###
