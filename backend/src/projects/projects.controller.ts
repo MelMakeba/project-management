@@ -22,6 +22,7 @@ import { RequirePermissions } from 'src/auth/decorator/permission.decorator';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
 import { ApiResponse } from '../shared/interfaces/api-response.interfaces';
 import { JwtAuthGuard } from 'src/auth/guards/jwt/jwtAuth.guard';
+
 import { CreateProjectDto } from 'src/dto/create.project.dto';
 import { UpdateProjectDto } from 'src/dto/update.project.dto';
 import { Status } from 'generated/prisma';
@@ -30,19 +31,16 @@ import { Response } from 'express';
 @Controller('projects')
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
-
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(JwtAuthGuard, PermissionGuard)
   @RequirePermissions(Permission.CREATE_PROJECT)
-  async createProject(
-    @Body() data: CreateProjectDto,
-  ): Promise<ApiResponse<Project>> {
+  async createProject(@Body() data: CreateProjectDto): Promise<ApiResponse<Project>> {
     try {
-      const project = await this.projectsService.createProject(data);
+      const result = await this.projectsService.createProject(data);
       return {
         success: true,
-        data: project as unknown as Project,
+        data: result as unknown as Project,
         message: 'Project created successfully',
       };
     } catch (error) {
@@ -59,11 +57,11 @@ export class ProjectsController {
   @RequirePermissions(Permission.VIEW_ALL_PROJECTS)
   async getAllProjects(): Promise<ApiResponse<Project[]>> {
     try {
-      const projects = await this.projectsService.getAllProjects();
+      const result = await this.projectsService.getAllProjects();
       return {
         success: true,
-        data: projects as unknown as Project[],
-        message: `Retrieved ${projects.length} projects successfully`,
+        data: result as unknown as Project[],
+        message: `Retrieved ${result.length} projects successfully`,
       };
     } catch (error) {
       return {
@@ -78,7 +76,6 @@ export class ProjectsController {
   @UseGuards(JwtAuthGuard, PermissionGuard)
   @RequirePermissions(Permission.VIEW_ALL_PROJECTS)
   async getCompletedProjects(): Promise<ApiResponse<Project[]>> {
-    console.log('✅ /projects/completed endpoint hit');
     try {
       const projects = await this.projectsService.viewCompletedProjects();
       console.log('✅ Completed projects from DB:', projects);
@@ -88,7 +85,6 @@ export class ProjectsController {
         message: `${projects.length} completed projects retrieved successfully`,
       };
     } catch (error) {
-      console.log('Error retrieving completed projects:', error);
       return {
         success: false,
         message: 'Error retrieving completed projects',
@@ -102,11 +98,11 @@ export class ProjectsController {
   @RequirePermissions(Permission.VIEW_ALL_PROJECTS)
   async getPendingProjects(): Promise<ApiResponse<Project[]>> {
     try {
-      const projects = await this.projectsService.viewPendingProjects();
+      const result = await this.projectsService.viewPendingProjects();
       return {
         success: true,
-        data: projects as unknown as Project[],
-        message: `Retrieved ${projects.length} pending projects successfully`,
+        data: result as unknown as Project[],
+        message: `Retrieved ${result.length} pending projects successfully`,
       };
     } catch (error) {
       return {
@@ -122,11 +118,11 @@ export class ProjectsController {
   @RequirePermissions(Permission.VIEW_ALL_PROJECTS)
   async getProjects(): Promise<ApiResponse<Project[]>> {
     try {
-      const projects = await this.projectsService.viewInProgressProjects();
+      const result = await this.projectsService.viewInProgressProjects();
       return {
         success: true,
-        data: projects as unknown as Project[],
-        message: `Retrieved ${projects.length} in_progress projects successfully`,
+        data: result as unknown as Project[],
+        message: `Retrieved ${result.length} in_progress projects successfully`,
       };
     } catch (error) {
       return {
@@ -178,16 +174,10 @@ export class ProjectsController {
     @Body() data: UpdateProjectDto,
   ): Promise<ApiResponse<Project>> {
     try {
-      const project = await this.projectsService.updateProject(id, data);
-      if (!project) {
-        return {
-          success: false,
-          message: `Project with id ${id} not found`,
-        };
-      }
+      const result = await this.projectsService.updateProject(id, data);
       return {
         success: true,
-        data: project as unknown as Project,
+        data: result as unknown as Project,
         message: `Updated project with id ${id} successfully`,
       };
     } catch (error) {
@@ -231,12 +221,14 @@ export class ProjectsController {
       return {
         success: true,
         message: `Deleted project with id ${id} successfully`,
+        data: null,
       };
     } catch (error) {
       return {
         success: false,
         message: 'Error deleting project',
         error: error instanceof Error ? error.message : 'Unknown error',
+        data: null,
       };
     }
   }
@@ -249,17 +241,17 @@ export class ProjectsController {
     @Param('userId') userId: string,
   ): Promise<ApiResponse<Project>> {
     try {
-      const project = await this.projectsService.assignProjectToUser(
+      const result = await this.projectsService.assignProjectToUser(
         projectId,
         userId,
       );
-      return {
+      return  {
         success: true,
-        data: project as unknown as Project,
-        message: `Project with id ${projectId} assigned to user with id ${userId} successfully`,
+        data: result as unknown as Project,
+        message: `Project ${projectId} assigned to user ${userId}`,
       };
     } catch (error) {
-      return {
+      return  {
         success: false,
         message: 'Error assigning project to user',
         error: error instanceof Error ? error.message : 'Unknown error',
