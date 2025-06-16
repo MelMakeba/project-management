@@ -20,7 +20,7 @@ async login(@Body() data: LoginDto): Promise<ApiResponse<{ token: string }>> {
     return {
       success: true,
       message: 'You have logged in successfully',
-      data: result,
+      data: result.data
     };
   } catch (error) {
     return {

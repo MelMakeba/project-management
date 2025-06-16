@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
 import {
@@ -22,7 +21,6 @@ import { RequirePermissions } from 'src/auth/decorator/permission.decorator';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
 import { ApiResponse } from 'src/interfaces/apiResponse';
 import { JwtAuthGuard } from 'src/auth/guards/jwt/jwtAuth.guard';
-
 import { CreateProjectDto } from 'src/dto/create.project.dto';
 import { UpdateProjectDto } from 'src/dto/update.project.dto';
 import { Status } from 'generated/prisma';
@@ -34,20 +32,16 @@ export class ProjectsController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(JwtAuthGuard, PermissionGuard)
-  // @RequirePermissions(Action.CREATE)
   @RequirePermissions(Permission.CREATE_PROJECT)
-  async createProject(
-    @Body() data: CreateProjectDto,
-  ): Promise<ApiResponse<Project>> {
+  async createProject(@Body() data: CreateProjectDto): Promise<ApiResponse<Project>> {
     try {
-      const project = await this.projectsService.createProject(data);
+      const result = await this.projectsService.createProject(data);
       return {
-        success: true,
-        data: project,
-        message: 'Project created successfully',
+        success: result.success,
+        data: result.data,
+        message: result.message,
       };
     } catch (error) {
-      console.error('Create project error:', error);
       return {
         success: false,
         message: 'Error creating project',
@@ -58,15 +52,14 @@ export class ProjectsController {
 
   @Get()
   @UseGuards(JwtAuthGuard, PermissionGuard)
-  // @RequirePermissions(Action.READ)
   @RequirePermissions(Permission.VIEW_ALL_PROJECTS)
   async getAllProjects(): Promise<ApiResponse<Project[]>> {
     try {
-      const projects = await this.projectsService.getAllProjects();
+      const result = await this.projectsService.getAllProjects();
       return {
-        success: true,
-        data: projects,
-        message: `Retrieved ${projects.length} projects successfully`,
+        success: result.success,
+        data: result.data,
+        message: `Retrieved ${result.data?.length ?? 0} projects successfully`,
       };
     } catch (error) {
       return {
@@ -80,17 +73,14 @@ export class ProjectsController {
   @UseGuards(JwtAuthGuard, PermissionGuard)
   @RequirePermissions(Permission.VIEW_ALL_PROJECTS)
   async getCompletedProjects(): Promise<ApiResponse<Project[]>> {
-    console.log('✅ /projects/completed endpoint hit');
     try {
-      const projects = await this.projectsService.viewCompletedProjects(); 
-      console.log('✅ Completed projects from DB:', projects);
+      const result = await this.projectsService.viewCompletedProjects();
       return {
-        success: true,
-        data: projects,
-        message: `${projects.length} completed projects retrieved successfully`,
+        success: result.success,
+        data: result.data,
+        message: `${result.data?.length ?? 0} completed projects retrieved successfully`,
       };
     } catch (error) {
-      console.log('Error retrieving completed projects:', error);
       return {
         success: false,
         message: 'Error retrieving completed projects',
@@ -99,66 +89,54 @@ export class ProjectsController {
     }
   }
 
-  /**
-   * @Get() pending projects
-   * @param id 
-   * @returns 
-   */
   @Get('status/pending')
   @UseGuards(JwtAuthGuard, PermissionGuard)
   @RequirePermissions(Permission.VIEW_ALL_PROJECTS)
-  async getPendingProjects(): Promise<ApiResponse<Project[]>>{
+  async getPendingProjects(): Promise<ApiResponse<Project[]>> {
     try {
-      const projects = await this.projectsService.viewPendingProjects();
+      const result = await this.projectsService.viewPendingProjects();
       return {
-        success: true,
-        data: projects,
-        message: `Retrieved ${projects.length} pending projects successfully`,
-      }
+        success: result.success,
+        data: result.data,
+        message: `Retrieved ${result.data?.length ?? 0} pending projects successfully`,
+      };
     } catch (error) {
       return {
         success: false,
         message: 'Error retrieving pending projects',
-      }
+      };
     }
   }
 
-  /**
-   * @Get()
-   * @param id 
-   * @returns project[]
-   */
   @Get('status/in_progress')
   @UseGuards(JwtAuthGuard, PermissionGuard)
   @RequirePermissions(Permission.VIEW_ALL_PROJECTS)
-  async getProjects(): Promise<ApiResponse<Project[]>>{
+  async getProjects(): Promise<ApiResponse<Project[]>> {
     try {
-      const projects = await this.projectsService.viewInProgressProjects();
+      const result = await this.projectsService.viewInProgressProjects();
       return {
-        success: true,
-        data: projects,
-        message: `Retrieved ${projects.length} in_progress projects successfully`,
-      }
+        success: result.success,
+        data: result.data,
+        message: `Retrieved ${result.data?.length ?? 0} in_progress projects successfully`,
+      };
     } catch (error) {
       return {
         success: false,
         message: 'Error retrieving in_progress projects',
-      }
+      };
     }
   }
 
-  // get ProjectById
   @Get(':id')
   @UseGuards(JwtAuthGuard, PermissionGuard)
-  // @RequirePermissions(Action.READ)
   @RequirePermissions(Permission.VIEW_ALL_PROJECTS)
   async getProjectById(@Param('id') id: string): Promise<ApiResponse<Project>> {
     try {
-      const project = await this.projectsService.getProjectById(id);
+      const result = await this.projectsService.getProjectById(id);
       return {
-        success: true,
-        data: project,
-        message: `Retrieved project with id ${id} successfully`,
+        success: result.success,
+        data: result.data,
+        message: result.message || `Retrieved project with id ${id} successfully`,
       };
     } catch (error) {
       return {
@@ -168,29 +146,19 @@ export class ProjectsController {
     }
   }
 
-  
-
-  // edit or update project (User Role)
   @Patch(':id')
   @UseGuards(JwtAuthGuard, PermissionGuard)
-  // @RequirePermissions(Action.UPDATE)
   @RequirePermissions(Permission.MANAGE_PROJECTS)
   async updateProject(
     @Param('id') id: string,
     @Body() data: UpdateProjectDto,
   ): Promise<ApiResponse<Project>> {
     try {
-      const project = await this.projectsService.updateProject(id, data);
-      if (!project) {
-        return {
-          success: false,
-          message: `Project with id ${id} not found`,
-        };
-      }
+      const result = await this.projectsService.updateProject(id, data);
       return {
-        success: true,
-        data: project,
-        message: `Updated project with id ${id} successfully`,
+        success: result.success,
+        data: result.data,
+        message: result.message || `Updated project with id ${id} successfully`,
       };
     } catch (error) {
       return {
@@ -201,110 +169,90 @@ export class ProjectsController {
     }
   }
 
+  @Get('user/:userId')
+  @UseGuards(JwtAuthGuard, PermissionGuard)
+  @RequirePermissions(Permission.VIEW_OWN_PROJECTS)
+  async viewOwnProjects(@Param('userId') userId: string): Promise<ApiResponse<Project[]>> {
+    try {
+      const result = await this.projectsService.viewOwnProject(userId);
+      return {
+        success: result.success,
+        data: result.data ? [result.data] : [],
+        message: result.message || `Projects for user ${userId} retrieved successfully`,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'You have no assigned projects',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
 
-      /**
-     * @Get() view own projects
-     * @ params userId
-     * @ return projects
-     */
-      @Get('user/:userId')
-      @UseGuards(JwtAuthGuard, PermissionGuard)
-      @RequirePermissions(Permission.VIEW_OWN_PROJECTS)
-      async viewOwnProjects(@Param('userId') userId: string): Promise<ApiResponse<Project>>{
-        try{
-          const projects = await this.projectsService.viewOwnProject(userId);
-          return{
-            success: true,
-            data: projects,
-            message: `Projects of user with id (${userId}) viewed successfully`
-          }
-        } catch (error) {
-          console.error('Error',error)
-          return{
-            success: false,
-            message: 'You have no assigned projects',
-            error: error instanceof Error ? error.message : 'Unknown error',
-          }
-        }
-      }
-  
   @Delete(':id')
   @UseGuards(JwtAuthGuard, PermissionGuard)
-  // @RequirePermissions(Action.DELETE)
   @RequirePermissions(Permission.MANAGE_PROJECTS)
   async deleteProject(@Param('id') id: string): Promise<ApiResponse<null>> {
     try {
-      await this.projectsService.deleteProject(id);
+      const result = await this.projectsService.deleteProject(id);
       return {
-        success: true,
-        message: `Deleted project with id ${id} successfully`,
+        success: result.success,
+        message: result.message || `Deleted project with id ${id} successfully`,
+        data: null,
       };
     } catch (error) {
       return {
         success: false,
         message: 'Error deleting project',
         error: error instanceof Error ? error.message : 'Unknown error',
+        data: null,
       };
     }
   }
 
-  /**
-   * @PATCH() assign ProjectToUser
-   * @ param @Patch(':projectId/assign/:userId')
-   * @ param @UseGuards(JwtAuthGuard, PermissionGuard)
-   * @ return project 
-   */
   @Patch(':projectId/assign/:userId')
   @UseGuards(JwtAuthGuard, PermissionGuard)
   @RequirePermissions(Permission.ASSIGN_PROJECT)
-  async assignProjectToUser(@Param('projectId') projectId: string, @Param('userId') userId: string): Promise<ApiResponse<Project>>{
+  async assignProjectToUser(
+    @Param('projectId') projectId: string,
+    @Param('userId') userId: string,
+  ): Promise<ApiResponse<Project>> {
     try {
-      const project = await this.projectsService.assignProjectToUser(projectId, userId);
-      return{
-        success: true,
-        data: project,
-        message: `Project with id ${projectId} assigned to user with id ${userId} successfully`
-      }
+      const result = await this.projectsService.assignProjectToUser(projectId, userId);
+      return {
+        success: result.success,
+        data: result.data,
+        message: result.message || `Project ${projectId} assigned to user ${userId}`,
+      };
     } catch (error) {
-      return{
+      return {
         success: false,
         message: 'Error assigning project to user',
         error: error instanceof Error ? error.message : 'Unknown error',
-      }
+      };
     }
   }
 
-  /**
-   * @ PATCH() update Project status 
-   * @ param userId and projectId
-   * @ return project
-   */
   @Patch(':projectId/status')
   @UseGuards(JwtAuthGuard, PermissionGuard)
   @RequirePermissions(Permission.UPDATE_PROJECT_STATUS)
-  async updateProjectStatus(@Param('projectId') projectId: string, @Body() body: {status: Status}): Promise<ApiResponse<Project>>{
+  async updateProjectStatus(
+    @Param('projectId') projectId: string,
+    @Body() body: { status: Status },
+  ): Promise<ApiResponse<Project>> {
     try {
-      const project = await this.projectsService.updateProjectStatus(projectId, body.status);
-      return{
-        success: true,
-        data: project,
-        message: `Project with id ${projectId} status updated successfully`
-      }
-      } catch (error) {
-        return{
-          success: false,
-          message: 'Error updating project status',
-          error: error instanceof Error ? error.message : 'Unknown error',
-        }
-      }
+      const result = await this.projectsService.updateProjectStatus(projectId, body.status);
+      return {
+        success: result.success,
+        data: result.data,
+        message: result.message || `Project ${projectId} status updated`,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error updating project status',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
     }
-
-    /**
-     * get all completed projects where status is COMPLETED
-     * @Get()
-     * @ UseGuards(JwtAuthGuard, PermissionGuard)
-     * @ RequirePermissions(Permission.GET_COMPLETED_PROJECTS)
-     * @ return projects[]
-     */
-    
   }
+}
