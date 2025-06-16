@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Please fill in all fields.');
             return;
         }
-        if (!isValidEmail(email)) {
+        if (!isEmailValid(email)) {
             alert('Please enter a valid email address.');
             return;
         }
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
             email,
             password,
             role: 'USER',
-            id: "",
+            id: 0,
             token: ""
         };
         try {

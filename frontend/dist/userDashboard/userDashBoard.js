@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => __awaiter(void 0, void 0, vo
             markCompletedBtn.classList.remove('hidden');
             markCompletedBtn.onclick = () => __awaiter(void 0, void 0, void 0, function* () {
                 try {
-                    const completeRes = yield fetch(`http://localhost:3000/${user.id}/project/complete`, {
+                    const completeRes = yield fetch(`http://localhost:3000/${user.id}/completed`, {
                         method: 'PATCH',
                         headers: {
                             'Content-Type': 'application/json',

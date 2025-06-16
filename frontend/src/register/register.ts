@@ -36,7 +36,7 @@ interface User {
         return;
       }
   
-      if (!isValidEmail(email)) {
+      if (!isEmailValid(email)) {
         alert('Please enter a valid email address.');
         return;
       }
