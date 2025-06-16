@@ -1,0 +1,26 @@
+{
+  "name": "project-management",
+  "version": "1.0.0",
+  "description": "Creating a project management system.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MelMakeba/project-management.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MelMakeba/project-management/issues"
+  },
+  "homepage": "https://github.com/MelMakeba/project-management#readme",
+  "devDependencies": {
+    "prisma": "^6.9.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.9.0"
+  }
+}
