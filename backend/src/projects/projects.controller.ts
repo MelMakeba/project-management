@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
@@ -38,7 +39,9 @@ export class ProjectsController {
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(JwtAuthGuard, PermissionGuard)
   @RequirePermissions(Permission.CREATE_PROJECT)
-  async createProject(@Body() data: CreateProjectDto): Promise<ApiResponse<Project>> {
+  async createProject(
+    @Body() data: CreateProjectDto,
+  ): Promise<ApiResponse<Project>> {
     try {
       const result = await this.projectsService.createProject(data);
       return {
@@ -151,7 +154,6 @@ export class ProjectsController {
         message: `Retrieved project with id ${id} successfully`,
       });
     } catch (error) {
-      // Return 404 for "not found" errors
       if (error.message.includes('not found')) {
         response.status(HttpStatus.NOT_FOUND).json({
           success: false,
@@ -159,7 +161,6 @@ export class ProjectsController {
           error: error.message,
         });
       } else {
-        // Return 500 for other errors
         response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
           success: false,
           message: 'Error retrieving project',
@@ -218,21 +219,46 @@ export class ProjectsController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard, PermissionGuard)
   @RequirePermissions(Permission.MANAGE_PROJECTS)
-  async deleteProject(@Param('id') id: string): Promise<ApiResponse<null>> {
+  async deleteProject(
+    @Param('id') id: string,
+    @Res() response: Response,
+  ): Promise<void> {
     try {
+      const project = await this.projectsService.getProjectById(id);
+
+      if (!project) {
+        response.status(HttpStatus.NOT_FOUND).json({
+          success: false,
+          message: 'Project not found',
+          data: null,
+        });
+        return;
+      }
+
+      // Check if project is completed
+      if (project.status !== 'COMPLETED') {
+        response.status(HttpStatus.BAD_REQUEST).json({
+          success: false,
+          message:
+            'Project must be marked as completed before it can be deleted',
+          data: null,
+        });
+        return;
+      }
+
       await this.projectsService.deleteProject(id);
-      return {
+      response.status(HttpStatus.OK).json({
         success: true,
         message: `Deleted project with id ${id} successfully`,
         data: null,
-      };
+      });
     } catch (error) {
-      return {
+      response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: 'Error deleting project',
         error: error instanceof Error ? error.message : 'Unknown error',
         data: null,
-      };
+      });
     }
   }
 
@@ -242,23 +268,39 @@ export class ProjectsController {
   async assignProjectToUser(
     @Param('projectId') projectId: string,
     @Param('userId') userId: string,
-  ): Promise<ApiResponse<Project>> {
+    @Res() response: Response,
+  ): Promise<void> {
     try {
       const result = await this.projectsService.assignProjectToUser(
         projectId,
         userId,
       );
-      return  {
+
+      response.status(HttpStatus.OK).json({
         success: true,
         data: result as unknown as Project,
         message: `Project ${projectId} assigned to user ${userId}`,
-      };
+      });
     } catch (error) {
-      return  {
-        success: false,
-        message: 'Error assigning project to user',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      };
+      if (error.message && error.message.includes('already assigned')) {
+        response.status(HttpStatus.CONFLICT).json({
+          success: false,
+          message: 'Error assigning project to user',
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
+      } else if (error.message && error.message.includes('not found')) {
+        response.status(HttpStatus.NOT_FOUND).json({
+          success: false,
+          message: 'Error assigning project to user',
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
+      } else {
+        response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          success: false,
+          message: 'Error assigning project to user',
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
+      }
     }
   }
 
@@ -295,7 +337,6 @@ export class ProjectsController {
     @Body() updateProjectDto: UpdateProjectDto,
     @Request() req: any,
   ): Promise<Project> {
-    // Extract user ID from the JWT token
     const userId = req.user.sub;
     return this.projectsService.updateOwnProject(
       projectId,

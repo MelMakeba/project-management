@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
@@ -11,13 +10,11 @@ export class CreateProjectDto {
   @Transform(({ value }) => value.trim())
   name: string;
 
-  // validate the project description
   @IsString({ message: 'Project description must be a string' })
   @IsNotEmpty({ message: 'Project description is required' })
   @Transform(({ value }) => value.trim())
   description: string;
 
-  // validate the project end date
   @IsString({ message: 'Project end date must be a string' })
   @IsNotEmpty({ message: 'Project end date is required' })
   @Transform(({ value }) => value.trim())

@@ -9,7 +9,6 @@ body {
   background-color: #f8f9fa;
 }
 
-/* Header */
 .header {
   display: flex;
   justify-content: space-between;
@@ -49,7 +48,6 @@ body {
   transform: scale(1.1);
 }
 
-/* Sidebar */
 .side-bar {
   width: 250px;
   background: #0d3c5c;
@@ -88,6 +86,13 @@ body {
   padding: 10px 0;
   font-weight: 500;
   font-size: 16px;
+}
+
+main h4{
+  padding-bottom: 4%;
+  font-size: 30px;
+  color: #1a5276;
+  font-weight: 600;
 }
 
 #admin {
@@ -315,6 +320,98 @@ ion-icon {
 .incomplete .project-status {
   background-color: rgba(52, 152, 219, 0.1);
   color: #3498db;
+}
+
+
+.project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status-badge.pending {
+  background-color: #FEF3C7;
+  color: #D97706;
+}
+
+.status-badge.in.progress {
+  background-color: #E0F2FE;
+  color: #0284C7;
+}
+
+.status-badge.completed {
+  background-color: #DCFCE7;
+  color: #16A34A;
+}
+
+.completed-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 30px;
+  height: 30px;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.completion-timestamp {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: #888;
+  font-style: italic;
+  text-align: right;
+}
+
+.completion-animation {
+  animation: completeProject 0.5s ease-in-out;
+}
+
+@keyframes completeProject {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.project-card {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.project-card.complete {
+  background-color: rgba(220, 252, 231, 0.1);
+  border-left: 4px solid #16A34A;
+}
+
+.status-btn {
+  transition: all 0.3s ease;
+}
+
+.completed-btn {
+  background-color: #16A34A !important;
+  cursor: default !important;
+  opacity: 0.7;
 }
 
 @media (max-width: 1200px) {

@@ -26,15 +26,13 @@ export class AuthService {
   async login(loginDto: LoginDto): Promise<{ token: string; user: any }> {
     const { email, password } = loginDto;
     
-    // Add validation to ensure email isn't undefined
     if (!email) {
       throw new BadRequestException('Email is required');
     }
 
-    // Find user
     const user = await this.prisma.user.findUnique({
       where: {
-        email: email.toLowerCase(), // Make sure to normalize email
+        email: email.toLowerCase(), 
       },
     });
     
@@ -42,8 +40,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
     
-    // Verify password
-    // Verify password
+   
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
@@ -54,15 +51,14 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       role: user.role,
-      permissions: []  // Use empty array since permissions don't exist on the user object
+      permissions: []  
     };
     
     const token = this.jwtService.sign(payload);
     
-    // Remove password from user object
+    
     const { password: _, ...userWithoutPassword } = user;
     
-    // Return both token and user object
     return {
       token,
       user: userWithoutPassword
@@ -74,15 +70,13 @@ export class AuthService {
     try {
       const { email, password, name, role } = registerDto;
       
-      // Add validation to ensure email isn't undefined
       if (!email) {
         throw new BadRequestException('Email is required');
       }
 
-      // Check if user exists
       const existingUser = await this.prisma.user.findUnique({
         where: {
-          email: email.toLowerCase(), // Make sure to normalize email
+          email: email.toLowerCase(),
         },
       });
       if (existingUser) {
@@ -102,7 +96,6 @@ export class AuthService {
         },
       });
       
-      // Generate token
       const payload = {
         sub: newUser.id,
         email: newUser.email,
@@ -112,10 +105,8 @@ export class AuthService {
       
       const token = this.jwtService.sign(payload);
       
-      // Remove password from response
       const { password: _, ...userWithoutPassword } = newUser;
       
-      // Return both token and user
       return {
         token,
         user: userWithoutPassword,

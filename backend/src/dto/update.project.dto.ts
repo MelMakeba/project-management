@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -13,13 +12,11 @@ export class UpdateProjectDto {
   @MaxLength(50, { message: 'Name must be at most 50 characters long.' })
   name?: string;
 
-  // update for description
   @IsOptional()
   @IsString({ message: 'Description must be a string.' })
   @Transform(({value}) => value.trim())
   description?: string;
 
-  // update for end date
   @IsOptional()
   @IsString({ message: 'End date must be a string.' })
   @Transform(({value}) => value.trim())

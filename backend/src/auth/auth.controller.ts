@@ -38,7 +38,6 @@ export class AuthController {
     } catch (error) {
       console.error('Login error:', error);
       
-      // Return error response with 401 Unauthorized
       response.status(HttpStatus.UNAUTHORIZED).json({
         token: '',
         success: false,

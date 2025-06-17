@@ -14,9 +14,9 @@ POST http://localhost:3000/auth/register
 Content-Type: application/json
 
 {
-  "email": "earljoe06@gmail.com",
-  "password": "Joe123",
-  "name": "Baby Mwah",
+  "email": "melicity4@gmail.com",
+  "password": "Felicity123",
+  "name": "Fel Koi",
   "role": "USER"
 }
 
@@ -27,8 +27,8 @@ POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-  "email": "brianmwasbayo@gmail.com",
-  "password": "Kishoyan12"
+  "email": "melicity4@gmail.com",
+  "password": "Felicity123"
 }
 
 ###

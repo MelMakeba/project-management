@@ -1,4 +1,4 @@
-
+//main entry point for the frontend application
 console.log('----------------------------------------');
 console.log('🚀 Project Management System');
 console.log('----------------------------------------');

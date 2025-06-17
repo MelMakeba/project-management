@@ -198,7 +198,6 @@ enum ProjectStatus {
   }
   
   class AdminDashboard {
-    // Cards in the admin dashboard
     private projectsCard: HTMLElement | null = null;
     private completedProjectsCard: HTMLElement | null = null;
     private pendingProjectsCard: HTMLElement | null = null;
@@ -221,24 +220,18 @@ enum ProjectStatus {
     }
     
     private async init(): Promise<void> {
-      // Get reference to existing cards
       this.setupCardReferences();
       
-      // Setup logout functionality
       this.setupLogout();
       
-      // Load data
       await this.loadDashboardData();
       
-      // Setup event listeners for view buttons
       this.setupViewButtons();
     }
     
     private setupCardReferences(): void {
-      // Get all card elements
       const cards = document.querySelectorAll('.card');
       
-      // Assign references based on their order in the HTML
       if (cards.length >= 7) {
         this.projectsCard = cards[0] as HTMLElement;
         this.completedProjectsCard = cards[1] as HTMLElement;
@@ -261,39 +254,29 @@ enum ProjectStatus {
     }
     
     private async loadDashboardData(): Promise<void> {
-      // Show loading state for all cards
       this.showLoadingState();
       
       try {
-        // Fetch all necessary data at once
         const [allProjects, users] = await Promise.all([
           ProjectService.getAllProjects(),
           UserService.getAllUsers()
         ]);
         
-        // Process project data
         const completedProjects = allProjects.filter(p => p.status === ProjectStatus.COMPLETED);
         const pendingProjects = allProjects.filter(p => p.status === ProjectStatus.PENDING);
-        const inProgressProjects = allProjects.filter(p => p.status === ProjectStatus.IN_PROGRESS);
         const unassignedProjects = allProjects.filter(p => !p.userId);
         
-        // Process user data
-        const adminUsers = users.filter(u => u.role === UserRole.ADMIN);
-        const regularUsers = users.filter(u => u.role === UserRole.USER);
         
-        // Users with pending projects
         const userIdsWithPendingProjects = new Set(
           pendingProjects.filter(p => p.userId).map(p => p.userId)
         );
         const usersWithPending = users.filter(u => u.id && userIdsWithPendingProjects.has(u.id));
         
-        // Users without projects
         const assignedUserIds = new Set(
           allProjects.filter(p => p.userId).map(p => p.userId)
         );
         const usersWithoutProjects = users.filter(u => u.role === UserRole.USER && !assignedUserIds.has(u.id));
         
-        // Update card values
         this.updateCardValue(this.projectsCard, allProjects.length);
         this.updateCardValue(this.completedProjectsCard, completedProjects.length);
         this.updateCardValue(this.pendingProjectsCard, pendingProjects.length);
@@ -302,7 +285,6 @@ enum ProjectStatus {
         this.updateCardValue(this.usersWithPendingCard, usersWithPending.length);
         this.updateCardValue(this.usersWithoutProjectsCard, usersWithoutProjects.length);
         
-        // Store data for modals
         this.storeProjectData(allProjects, completedProjects, pendingProjects, unassignedProjects);
         this.storeUserData(users, usersWithPending, usersWithoutProjects);
         
@@ -348,7 +330,6 @@ enum ProjectStatus {
       pendingProjects: Project[],
       unassignedProjects: Project[]
     ): void {
-      // Store project data in data attributes for use in modals
       if (this.projectsCard) {
         this.projectsCard.dataset.projects = JSON.stringify(allProjects);
       }
@@ -368,7 +349,6 @@ enum ProjectStatus {
       usersWithPending: User[],
       usersWithoutProjects: User[]
     ): void {
-      // Store user data in data attributes for use in modals
       if (this.allUsersCard) {
         this.allUsersCard.dataset.users = JSON.stringify(allUsers);
       }
@@ -381,7 +361,6 @@ enum ProjectStatus {
     }
     
     private setupViewButtons(): void {
-      // Assign click handlers to all view buttons
       const viewButtons = document.querySelectorAll('#view-btn');
       viewButtons.forEach((btn, index) => {
         btn.addEventListener('click', () => {
@@ -392,25 +371,25 @@ enum ProjectStatus {
     
     private handleViewButtonClick(index: number): void {
       switch (index) {
-        case 0: // All Projects
+        case 0: 
           this.showProjectsModal('All Projects', this.projectsCard?.dataset.projects);
           break;
-        case 1: // Completed Projects
+        case 1: 
           this.showProjectsModal('Completed Projects', this.completedProjectsCard?.dataset.projects);
           break;
-        case 2: // Pending Projects
+        case 2:
           this.showProjectsModal('Pending Projects', this.pendingProjectsCard?.dataset.projects);
           break;
-        case 3: // Unassigned Projects
+        case 3: 
           this.showProjectsModal('Unassigned Projects', this.unassignedProjectsCard?.dataset.projects);
           break;
-        case 4: // All Users
+        case 4: 
           this.showUsersModal('All Users', this.allUsersCard?.dataset.users);
           break;
-        case 5: // Users with Pending Projects
+        case 5: 
           this.showUsersModal('Users with Pending Projects', this.usersWithPendingCard?.dataset.users);
           break;
-        case 6: // Users without Projects
+        case 6: 
           this.showUsersModal('Users without Projects', this.usersWithoutProjectsCard?.dataset.users);
           break;
       }
@@ -424,7 +403,6 @@ enum ProjectStatus {
       
       const projects: Project[] = JSON.parse(projectsJson);
       
-      // Create modal container matching admin.css style
       const modal = document.createElement('div');
       modal.className = 'modal-overlay';
       modal.style.position = 'fixed';
@@ -449,14 +427,12 @@ enum ProjectStatus {
       modalContent.style.maxHeight = '80vh';
       modalContent.style.overflow = 'auto';
       
-      // Add title
       const modalTitle = document.createElement('h2');
       modalTitle.textContent = title;
       modalTitle.style.color = '#127b8e';
       modalTitle.style.marginBottom = '20px';
       modalTitle.style.textAlign = 'center';
       
-      // Add close button
       const closeButton = document.createElement('button');
       closeButton.textContent = 'Close';
       closeButton.style.position = 'absolute';
@@ -470,7 +446,6 @@ enum ProjectStatus {
       closeButton.style.cursor = 'pointer';
       closeButton.onclick = () => document.body.removeChild(modal);
       
-      // Create project list
       const projectList = document.createElement('div');
       projectList.style.marginTop = '20px';
       
@@ -481,7 +456,6 @@ enum ProjectStatus {
         noProjects.style.color = '#ccc';
         projectList.appendChild(noProjects);
       } else {
-        // Create projects list with admin.css styling
         projects.forEach(project => {
           const projectItem = document.createElement('div');
           projectItem.style.backgroundColor = '#333';
@@ -515,7 +489,6 @@ enum ProjectStatus {
         });
       }
       
-      // Assemble modal
       modalContent.appendChild(closeButton);
       modalContent.appendChild(modalTitle);
       modalContent.appendChild(projectList);
@@ -532,7 +505,6 @@ enum ProjectStatus {
       
       const users: User[] = JSON.parse(usersJson);
       
-      // Create modal container
       const modal = document.createElement('div');
       modal.className = 'modal-overlay';
       modal.style.position = 'fixed';
@@ -557,14 +529,12 @@ enum ProjectStatus {
       modalContent.style.maxHeight = '80vh';
       modalContent.style.overflow = 'auto';
       
-      // Add title
       const modalTitle = document.createElement('h2');
       modalTitle.textContent = title;
       modalTitle.style.color = '#127b8e';
       modalTitle.style.marginBottom = '20px';
       modalTitle.style.textAlign = 'center';
       
-      // Add close button
       const closeButton = document.createElement('button');
       closeButton.textContent = 'Close';
       closeButton.style.position = 'absolute';
@@ -578,7 +548,6 @@ enum ProjectStatus {
       closeButton.style.cursor = 'pointer';
       closeButton.onclick = () => document.body.removeChild(modal);
       
-      // Create users list
       const userList = document.createElement('div');
       userList.style.marginTop = '20px';
       
@@ -589,7 +558,6 @@ enum ProjectStatus {
         noUsers.style.color = '#ccc';
         userList.appendChild(noUsers);
       } else {
-        // Create users list
         users.forEach(user => {
           const userItem = document.createElement('div');
           userItem.style.backgroundColor = '#333';
@@ -618,7 +586,6 @@ enum ProjectStatus {
         });
       }
       
-      // Assemble modal
       modalContent.appendChild(closeButton);
       modalContent.appendChild(modalTitle);
       modalContent.appendChild(userList);
@@ -645,13 +612,10 @@ enum ProjectStatus {
     }
     
     private async init(): Promise<void> {
-      // Get reference to the projects container
       this.userProjectsContainer = document.getElementById('userProjects');
       
-      // Setup logout functionality
       this.setupLogout();
       
-      // Load user projects
       await this.loadUserProjects();
     }
     
@@ -671,7 +635,6 @@ enum ProjectStatus {
         return;
       }
       
-      // Show loading state
       this.userProjectsContainer.innerHTML = '<p style="text-align:center;color:#ccc;">Loading your projects...</p>';
       
       const userInfo = ApiClient.getUserInfo();
@@ -690,17 +653,27 @@ enum ProjectStatus {
           return;
         }
         
-        // Clear container
         this.userProjectsContainer.innerHTML = '';
         
-        // Add each project as a card - following the user.css styling
         projects.forEach(project => {
           const projectCard = document.createElement('div');
           projectCard.className = `project-card ${project.status.toLowerCase() === 'completed' ? 'complete' : 'incomplete'}`;
+          projectCard.dataset.projectId = project.id;
+          
+          const projectHeader = document.createElement('div');
+          projectHeader.className = 'project-header';
           
           const projectTitle = document.createElement('h4');
           projectTitle.className = 'project-title';
           projectTitle.textContent = project.name || project.title || 'Unnamed Project';
+          
+          const statusBadge = document.createElement('span');
+          statusBadge.className = `status-badge ${project.status.toLowerCase()}`;
+          statusBadge.textContent = this.formatStatus(project.status);
+          statusBadge.id = `status-${project.id}`;
+          
+          projectHeader.appendChild(projectTitle);
+          projectHeader.appendChild(statusBadge);
           
           const projectDesc = document.createElement('p');
           projectDesc.className = 'project-desc';
@@ -708,7 +681,8 @@ enum ProjectStatus {
           
           const projectDate = document.createElement('p');
           projectDate.className = 'project-date';
-          projectDate.innerHTML = `<strong>Due Date:</strong> ${project.endDate || project.dueDate ? new Date(project.endDate || project.dueDate || '').toLocaleDateString() : 'Not set'}`;
+          projectDate.innerHTML = `<strong>Due Date:</strong> ${project.endDate || project.dueDate ? 
+            new Date(project.endDate || project.dueDate || '').toLocaleDateString() : 'Not set'}`;
           
           const statusBtn = document.createElement('button');
           statusBtn.className = 'status-btn';
@@ -716,12 +690,18 @@ enum ProjectStatus {
           if (project.status === ProjectStatus.COMPLETED) {
             statusBtn.textContent = 'Completed';
             statusBtn.disabled = true;
+            statusBtn.classList.add('completed-btn');
+            
+            const completedBadge = document.createElement('div');
+            completedBadge.className = 'completed-badge';
+            completedBadge.innerHTML = '✓';
+            projectCard.appendChild(completedBadge);
           } else {
             statusBtn.textContent = 'Mark as Complete';
-            statusBtn.addEventListener('click', () => this.markProjectComplete(project.id));
+            statusBtn.addEventListener('click', () => this.markProjectComplete(project.id, statusBtn));
           }
           
-          projectCard.appendChild(projectTitle);
+          projectCard.appendChild(projectHeader);
           projectCard.appendChild(projectDesc);
           projectCard.appendChild(projectDate);
           projectCard.appendChild(statusBtn);
@@ -739,14 +719,156 @@ enum ProjectStatus {
         `;
       }
     }
+    private formatStatus(status: ProjectStatus): string {
+      switch (status) {
+        case ProjectStatus.PENDING:
+          return 'Pending';
+        case ProjectStatus.IN_PROGRESS:
+          return 'In Progress';
+        case ProjectStatus.COMPLETED:
+          return 'Completed';
+        default:
+          return status;
+      }
+    }
     
-    private async markProjectComplete(projectId: string): Promise<void> {
-      if (confirm('Are you sure you want to mark this project as complete?')) {
-        const result = await ProjectService.markProjectComplete(projectId);
-        if (result) {
-          await this.loadUserProjects(); // Reload projects after update
+    private async markProjectComplete(projectId: string, button: HTMLButtonElement): Promise<void> {
+      const originalText = button.textContent;
+      
+      // Create custom confirmation dialog instead of using basic browser confirm()
+      const confirmed = await this.showConfirmationDialog(
+        'Complete Project', 
+        'Are you sure you want to mark this project as complete?',
+        'This action cannot be undone.'
+      );
+      
+      if (confirmed) {
+        try {
+          button.textContent = 'Updating...';
+          button.disabled = true;
+          
+          const result = await ProjectService.markProjectComplete(projectId);
+          
+          if (result) {
+            const card = button.closest('.project-card') as HTMLElement;
+            this.updateCardToCompletedState(card, result);
+          }
+        } catch (error) {
+          console.error('Error completing project:', error);
+          button.textContent = originalText;
+          button.disabled = false;
         }
       }
+    }
+    
+    private updateCardToCompletedState(card: HTMLElement, project: Project): void {
+      card.classList.remove('incomplete');
+      card.classList.add('complete', 'completion-animation');
+      
+      const statusBtn = card.querySelector('.status-btn') as HTMLButtonElement;
+      if (statusBtn) {
+        statusBtn.textContent = 'Completed';
+        statusBtn.disabled = true;
+        statusBtn.classList.add('completed-btn');
+      }
+      
+      const completedBadge = document.createElement('div');
+      completedBadge.className = 'completed-badge';
+      completedBadge.innerHTML = '✓';
+      
+      const completedTimestamp = document.createElement('p');
+      completedTimestamp.className = 'completion-timestamp';
+      completedTimestamp.textContent = `Completed on: ${new Date().toLocaleDateString()}`;
+      
+      card.appendChild(completedBadge);
+      card.appendChild(completedTimestamp);
+    }
+    
+    private showConfirmationDialog(title: string, message: string, subtext?: string): Promise<boolean> {
+      return new Promise((resolve) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.backgroundColor = 'rgba(0,0,0,0.7)';
+        overlay.style.zIndex = '1000';
+        overlay.style.display = 'flex';
+        overlay.style.justifyContent = 'center';
+        overlay.style.alignItems = 'center';
+        
+        const modal = document.createElement('div');
+        modal.className = 'confirmation-modal';
+        modal.style.backgroundColor = '#23242b';
+        modal.style.color = '#fff';
+        modal.style.borderRadius = '8px';
+        modal.style.padding = '20px';
+        modal.style.width = '80%';
+        modal.style.maxWidth = '400px';
+        modal.style.textAlign = 'center';
+        
+        const titleEl = document.createElement('h3');
+        titleEl.textContent = title;
+        titleEl.style.color = '#127b8e';
+        titleEl.style.marginBottom = '15px';
+        
+        const messageEl = document.createElement('p');
+        messageEl.textContent = message;
+        messageEl.style.marginBottom = subtext ? '10px' : '20px';
+        
+        modal.appendChild(titleEl);
+        modal.appendChild(messageEl);
+        
+        if (subtext) {
+          const subtextEl = document.createElement('p');
+          subtextEl.textContent = subtext;
+          subtextEl.style.fontSize = '0.9rem';
+          subtextEl.style.color = '#999';
+          subtextEl.style.marginBottom = '20px';
+          modal.appendChild(subtextEl);
+        }
+        
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.justifyContent = 'center';
+        buttonContainer.style.gap = '15px';
+        
+        const cancelBtn = document.createElement('button');
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.style.padding = '8px 15px';
+        cancelBtn.style.border = '1px solid #666';
+        cancelBtn.style.borderRadius = '4px';
+        cancelBtn.style.backgroundColor = 'transparent';
+        cancelBtn.style.color = '#fff';
+        cancelBtn.style.cursor = 'pointer';
+        
+        const confirmBtn = document.createElement('button');
+        confirmBtn.textContent = 'Complete';
+        confirmBtn.style.padding = '8px 15px';
+        confirmBtn.style.border = 'none';
+        confirmBtn.style.borderRadius = '4px';
+        confirmBtn.style.backgroundColor = '#4CAF50';
+        confirmBtn.style.color = '#fff';
+        confirmBtn.style.cursor = 'pointer';
+        
+        cancelBtn.onclick = () => {
+          document.body.removeChild(overlay);
+          resolve(false);
+        };
+        
+        confirmBtn.onclick = () => {
+          document.body.removeChild(overlay);
+          resolve(true);
+        };
+        
+        buttonContainer.appendChild(cancelBtn);
+        buttonContainer.appendChild(confirmBtn);
+        modal.appendChild(buttonContainer);
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+      });
     }
   }
   

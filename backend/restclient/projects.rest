@@ -1,7 +1,7 @@
 ### Create a new project
 POST http://localhost:3000/projects
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDgyMGFkOS03OGIyLTRkNjItOTlmOC0xY2E5ZTBiZDc0YmIiLCJlbWFpbCI6ImFkbWluTWVsQGV4YW1wbGUuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUwMDIzNDQwLCJleHAiOjE3NTAxMDk4NDB9.o5ig3Q-q41yff8i3OETHitY9xOJOpIEWOeV9MvzPV24
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MTE2ZDJiMi00NDY0LTQ5ZTQtYWMyNS00MmIzY2UyMDUwZjAiLCJlbWFpbCI6Im1lbGlzc2FtYWtlYmFAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUwMTQ5NjYwLCJleHAiOjE3NTAyMzYwNjB9.7fjvtQXEN_y0Vu6gYPJ2zs8r3R4TRUU2EFFnajB3XPU
 
 {
   "name": "Student Grade Tracker System",
@@ -14,7 +14,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDgyMGFkO
 ### Get all projects
 GET http://localhost:3000/projects
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MTE2ZDJiMi00NDY0LTQ5ZTQtYWMyNS00MmIzY2UyMDUwZjAiLCJlbWFpbCI6Im1lbGlzc2FtYWtlYmFAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUwMDI1Nzk4LCJleHAiOjE3NTAxMTIxOTh9.iHTphrBrleH2xge4WrzJYSiXjJRW5PuAsNJHxUda-4Q
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MTE2ZDJiMi00NDY0LTQ5ZTQtYWMyNS00MmIzY2UyMDUwZjAiLCJlbWFpbCI6Im1lbGlzc2FtYWtlYmFAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUwMTQ5NjYwLCJleHAiOjE3NTAyMzYwNjB9.7fjvtQXEN_y0Vu6gYPJ2zs8r3R4TRUU2EFFnajB3XPU
 ###
 
 ### Get a project by ID
@@ -36,16 +36,17 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDgyMGFkO
 ###
 
 ### Delete a project by ID
-DELETE http://localhost:3000/projects/aed62e64-45d0-4ad3-bfa1-622396d927ed
+DELETE http://localhost:3000/projects/fe86ade6-cbb5-4fac-b4b2-26638fa72067
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDgyMGFkOS03OGIyLTRkNjItOTlmOC0xY2E5ZTBiZDc0YmIiLCJlbWFpbCI6ImFkbWluTWVsQGV4YW1wbGUuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUwMDIzNDQwLCJleHAiOjE3NTAxMDk4NDB9.o5ig3Q-q41yff8i3OETHitY9xOJOpIEWOeV9MvzPV24
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MTE2ZDJiMi00NDY0LTQ5ZTQtYWMyNS00MmIzY2UyMDUwZjAiLCJlbWFpbCI6Im1lbGlzc2FtYWtlYmFAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUwMTQ5NjYwLCJleHAiOjE3NTAyMzYwNjB9.7fjvtQXEN_y0Vu6gYPJ2zs8r3R4TRUU2EFFnajB3XPU
 ###
 
 ### Assign project to a user
-PATCH http://localhost:3000/projects/b1380899-a88b-447a-bdbe-e3915a7eed87/assign/683975fd-f421-4128-9344-e9ee68553844
+PATCH http://localhost:3000/projects/adec2798-849e-43ff-8999-23fb4322cb83/assign/054ae079-df62-4795-9cb5-68f32fb4f0ff
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MTE2ZDJiMi00NDY0LTQ5ZTQtYWMyNS00MmIzY2UyMDUwZjAiLCJlbWFpbCI6Im1lbGlzc2FtYWtlYmFAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUwMDI1Nzk4LCJleHAiOjE3NTAxMTIxOTh9.iHTphrBrleH2xge4WrzJYSiXjJRW5PuAsNJHxUda-4Q
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MTE2ZDJiMi00NDY0LTQ5ZTQtYWMyNS00MmIzY2UyMDUwZjAiLCJlbWFpbCI6Im1lbGlzc2FtYWtlYmFAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUwMTQ5NjYwLCJleHAiOjE3NTAyMzYwNjB9.7fjvtQXEN_y0Vu6gYPJ2zs8r3R4TRUU2EFFnajB3XPU
+###fe86ade6-cbb5-4fac-b4b2-26638fa72067
+###054ae079-df62-4795-9cb5-68f32fb4f0ff
 
 ###
 ### Update project status //by Admin

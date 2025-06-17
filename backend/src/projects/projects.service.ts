@@ -189,18 +189,15 @@ export class ProjectsService {
         throw new Error('Project is already assigned to a user');
       }
 
-      // Check if user already has an active project
-      const userActiveProjects = await this.prisma.project.findMany({
+      // Check if user already has ANY project assigned (regardless of status)
+      const userProjects = await this.prisma.project.findFirst({
         where: {
           userId,
-          status: {
-            in: [Status.IN_PROGRESS],
-          },
         },
       });
 
-      if (userActiveProjects.length > 0) {
-        throw new Error('User already has an active project');
+      if (userProjects) {
+        throw new Error('User already has a project assigned');
       }
 
       // Assign project to user
